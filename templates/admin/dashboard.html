@@ -1,0 +1,408 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row g-4">
+        <!-- Filters Section (Sidebar) -->
+        <div class="col-lg-3">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="fas fa-filter me-2"></i>FILTERS</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6>Gender</h6>
+                        <div class="btn-group w-100" role="group" aria-label="Gender Filter">
+                            <input type="radio" class="btn-check" name="gender" id="gender_all" autocomplete="off" checked>
+                            <label class="btn btn-outline-primary" for="gender_all">All</label>
+
+                            <input type="radio" class="btn-check" name="gender" id="gender_female" autocomplete="off">
+                            <label class="btn btn-outline-primary" for="gender_female">Female</label>
+
+                            <input type="radio" class="btn-check" name="gender" id="gender_male" autocomplete="off">
+                            <label class="btn btn-outline-primary" for="gender_male">Male</label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="course" class="form-label fw-bold">Course</label>
+                        <select id="course" class="form-select">
+                            <option selected>All Courses</option>
+                            <option>Engineering</option>
+                            <!-- Add other courses -->
+                        </select>
+                    </div>
+                    <div>
+                        <h6>Year of Study</h6>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="year_all" checked>
+                            <label class="form-check-label" for="year_all">All</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="year1" checked>
+                            <label class="form-check-label" for="year1">Year 1</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="year2" checked>
+                            <label class="form-check-label" for="year2">Year 2</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="year3" checked>
+                            <label class="form-check-label" for="year3">Year 3</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="year4" checked>
+                            <label class="form-check-label" for="year4">Year 4</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Section -->
+        <div class="col-lg-6">
+            <!-- Stat Cards -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-4">
+                    <div class="card text-center shadow-sm border-start border-danger border-4 h-100">
+                        <div class="card-body">
+                            <h5 class="card-title text-danger">Depression</h5>
+                            <p class="display-4 fw-bold text-danger mb-0">{{ stats.depression_rate }}%</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-center shadow-sm border-start border-warning border-4 h-100">
+                        <div class="card-body">
+                            <h5 class="card-title text-warning">Anxiety</h5>
+                            <p class="display-4 fw-bold text-warning mb-0">{{ stats.anxiety_rate }}%</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-center shadow-sm border-start border-info border-4 h-100">
+                        <div class="card-body">
+                            <h5 class="card-title text-info">Panic</h5>
+                            <p class="display-4 fw-bold text-info mb-0">{{ stats.panic_rate }}%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- High Risk Cases Table -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="fas fa-exclamation-triangle me-2 text-danger"></i>Flagged High-Risk Cases</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0 align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Student ID</th>
+                                    <th>Depression Risk</th>
+                                    <th>Panic Risk</th>
+                                    <th>Status</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for case in stats.high_risk_cases %}
+                                <tr>
+                                    <td>{{ case.date }}</td>
+                                    <td>{{ case.student_id }}</td>
+                                    <td><span class="fw-bold text-danger">{{ case.depression_risk }}%</span></td>
+                                    <td><span class="fw-bold text-warning">{{ case.panic_risk }}%</span></td>
+                                    <td>
+                                        <span class="badge {% if case.reviewed %}bg-success{% else %}bg-warning text-dark{% endif %}">
+                                            {{ 'Reviewed' if case.reviewed else 'Pending' }}
+                                        </span>
+                                    </td>
+                                    <td class="text-end">
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button class="btn btn-outline-primary" onclick="viewDetails('{{ case.student_id }}')" title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-outline-success" onclick="markAsReviewed('{{ case.student_id }}')" title="Mark Reviewed">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info" onclick="contactStudent('{{ case.student_id }}')" title="Contact Student">
+                                                <i class="fas fa-envelope"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                {% if not stats.high_risk_cases %}
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted py-4">No high-risk cases flagged.</td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="col-lg-3">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">Correlation Heatmap</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="correlationHeatmap" style="min-height: 250px;"></canvas>
+                </div>
+            </div>
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">Breakdown by Year</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="yearBreakdown" style="min-height: 250px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student Details Modal -->
+    <div class="modal fade" id="studentDetailsModal" tabindex="-1" aria-labelledby="studentDetailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="studentDetailsModalLabel">Student Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="studentDetails">
+                        <!-- Details will be loaded here by JavaScript -->
+                        <p class="text-center text-muted">Loading student details...</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Modal -->
+    <div class="modal fade" id="contactModal" tabindex="-1" aria-labelledby="contactModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="contactModalLabel">Contact Student</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="contactForm">
+                        <div class="mb-3">
+                            <label for="contactSubject" class="form-label">Subject</label>
+                            <input type="text" class="form-control" id="contactSubject" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="contactMessage" class="form-label">Message</label>
+                            <textarea class="form-control" id="contactMessage" rows="4" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }} {# Include scripts from base.html if any #}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-chart-matrix@1.1.1/dist/chartjs-chart-matrix.min.js"></script> {# Added for heatmap #}
+
+<script>
+function viewDetails(studentId) {
+    // Example: Fetch and display student details
+    const detailsContainer = document.getElementById('studentDetails');
+    detailsContainer.innerHTML = `<p>Loading details for student ${studentId}...</p>`; // Placeholder
+    // Replace with your actual fetch logic to get and display details
+    // Example: detailsContainer.innerHTML = 'Fetched details content...';
+    var studentDetailsModal = new bootstrap.Modal(document.getElementById('studentDetailsModal'));
+    studentDetailsModal.show();
+}
+
+function markAsReviewed(studentId) {
+    console.log(`Marking case ${studentId} as reviewed...`);
+    // Send request to mark case as reviewed
+    fetch(`/api/cases/${studentId}/review`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            // Add any necessary headers like CSRF tokens if applicable
+        },
+        // body: JSON.stringify({ reviewed: true }) // Optional body if needed
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Review status updated:', data);
+        if (data.success) {
+            // Update UI to show reviewed status - simple reload for now
+            location.reload();
+        } else {
+             alert('Failed to mark as reviewed.');
+        }
+    })
+    .catch(error => {
+        console.error('Error marking as reviewed:', error);
+        alert('An error occurred while marking as reviewed.');
+    });
+}
+
+function contactStudent(studentId) {
+    // You might want to pass the studentId to the modal if needed
+    console.log(`Initiating contact for student ${studentId}`);
+    var contactModal = new bootstrap.Modal(document.getElementById('contactModal'));
+    // Optionally pre-fill form fields based on studentId
+    contactModal.show();
+}
+
+// Handle contact form submission
+document.getElementById('contactForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const subject = document.getElementById('contactSubject').value;
+    const message = document.getElementById('contactMessage').value;
+    console.log('Sending message:', { subject, message });
+    // Add your actual message sending logic here (e.g., fetch POST request)
+    alert('Message sending functionality not implemented yet.'); // Placeholder
+    var contactModal = bootstrap.Modal.getInstance(document.getElementById('contactModal'));
+    contactModal.hide();
+    // Optionally clear the form
+    // e.target.reset();
+});
+
+// --- Chart.js Initialization ---
+document.addEventListener('DOMContentLoaded', () => {
+    try {
+        // Correlation Heatmap
+        const correlationCtx = document.getElementById('correlationHeatmap')?.getContext('2d');
+        if (correlationCtx) {
+            const correlationData = {
+                labels: ['Depression', 'Anxiety', 'Panic', 'CGPA'],
+                datasets: [{
+                    label: 'Correlation Matrix',
+                    data: [
+                        {x: 'Depression', y: 'Depression', v: 1.0}, {x: 'Anxiety', y: 'Depression', v: 0.8}, {x: 'Panic', y: 'Depression', v: 0.6}, {x: 'CGPA', y: 'Depression', v: -0.4},
+                        {x: 'Depression', y: 'Anxiety', v: 0.8}, {x: 'Anxiety', y: 'Anxiety', v: 1.0}, {x: 'Panic', y: 'Anxiety', v: 0.7}, {x: 'CGPA', y: 'Anxiety', v: -0.3},
+                        {x: 'Depression', y: 'Panic', v: 0.6}, {x: 'Anxiety', y: 'Panic', v: 0.7}, {x: 'Panic', y: 'Panic', v: 1.0}, {x: 'CGPA', y: 'Panic', v: -0.5},
+                        {x: 'Depression', y: 'CGPA', v: -0.4}, {x: 'Anxiety', y: 'CGPA', v: -0.3}, {x: 'Panic', y: 'CGPA', v: -0.5}, {x: 'CGPA', y: 'CGPA', v: 1.0}
+                    ],
+                     backgroundColor: function(ctx) {
+                        const value = ctx.dataset.data[ctx.dataIndex].v;
+                        const alpha = Math.min(Math.abs(value), 1); // Ensure alpha is between 0 and 1
+                        return value > 0
+                            ? `rgba(255, 99, 132, ${alpha})` // Red for positive
+                            : `rgba(54, 162, 235, ${alpha})`; // Blue for negative
+                    },
+                    borderColor: 'rgba(200, 200, 200, 0.5)',
+                    borderWidth: 1,
+                    width: ({chart}) => (chart.chartArea || {}).width / correlationData.labels.length - 1,
+                    height: ({chart}) => (chart.chartArea || {}).height / correlationData.labels.length - 1
+                }]
+            };
+            new Chart(correlationCtx, {
+                type: 'matrix',
+                data: correlationData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false, // Allow chart to fill container height
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                title: () => '', // No title
+                                label: (context) => {
+                                    const v = context.dataset.data[context.dataIndex];
+                                    return [`${v.x} vs ${v.y}`, `Correlation: ${v.v.toFixed(2)}`];
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'category',
+                            labels: correlationData.labels,
+                            ticks: { display: true }, // Show axis labels
+                            grid: { display: false }
+                        },
+                        y: {
+                            type: 'category',
+                            labels: correlationData.labels,
+                            offset: true,
+                            ticks: { display: true }, // Show axis labels
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        } else {
+            console.warn("Canvas element for correlation heatmap not found.");
+        }
+
+        // Year Breakdown Chart
+        const yearBreakdownCtx = document.getElementById('yearBreakdown')?.getContext('2d');
+         if (yearBreakdownCtx) {
+            const yearBreakdownData = {
+                labels: ['Year 1', 'Year 2', 'Year 3', 'Year 4'],
+                datasets: [{
+                    label: 'Risk Level',
+                    data: [75, 65, 60, 45], // Example data
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.6)',
+                        'rgba(54, 162, 235, 0.6)',
+                        'rgba(255, 206, 86, 0.6)',
+                        'rgba(75, 192, 192, 0.6)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            };
+            new Chart(yearBreakdownCtx, {
+                type: 'bar',
+                data: yearBreakdownData,
+                options: {
+                    indexAxis: 'y', // Make it a horizontal bar chart if preferred
+                    responsive: true,
+                    maintainAspectRatio: false, // Allow chart to fill container height
+                    scales: {
+                         x: { // Changed from y
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Risk Level (%)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        } else {
+             console.warn("Canvas element for year breakdown chart not found.");
+        }
+    } catch (error) {
+        console.error("Error initializing charts:", error);
+    }
+});
+</script>
+{% endblock %}

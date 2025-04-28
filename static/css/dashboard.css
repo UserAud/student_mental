@@ -1,0 +1,159 @@
+.dashboard-container {
+    display: grid;
+    grid-template-columns: 250px 1fr 300px;  /* Updated to include charts section */
+    gap: 20px;
+    padding: 20px;
+}
+
+.filters-section {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.filter-group {
+    margin-bottom: 20px;
+}
+
+.stat-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 2em;
+    font-weight: bold;
+    color: #e74c3c;
+}
+
+.risk-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.risk-table th,
+.risk-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.risk-value {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.outcomes-section{
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.risk-cases-section {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Updated charts section layout */
+.charts-section {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    margin-top: 30px;
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    height: fit-content;
+}
+
+.correlation-heatmap,
+.year-breakdown {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+/* Adjust main content area to accommodate fixed charts */
+.stats-section {
+    padding-right: 20px;
+}
+
+/* Make charts responsive */
+@media (max-width: 1200px) {
+    .correlation-heatmap canvas,
+    .year-breakdown canvas {
+        width: 100% !important;
+        height: 250px !important;
+        margin-top: 10px;
+    }
+    
+    .charts-section {
+        height: auto;
+        overflow-y: auto;
+    }
+    
+    .stats-section {
+        width: 100%;
+        padding-right: 0;
+    }
+}
+
+
+/* Status badges */
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.875rem;
+}
+
+.status-pending {
+    background-color: #ffeeba;
+    color: #856404;
+}
+
+.status-reviewed {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+/* Action buttons container */
+.action-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+/* Modal styling */
+.modal-body {
+    padding: 20px;
+}
+
+#studentDetails {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+/* Table improvements */
+.risk-table th,
+.risk-table td {
+    vertical-align: middle;
+}
+
+.risk-table .btn {
+    white-space: nowrap;
+}

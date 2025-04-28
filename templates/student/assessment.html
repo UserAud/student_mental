@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-primary text-white py-4 rounded-top-4">
+                    <div class="text-center">
+                        <i class="fas fa-clipboard-list fa-2x mb-3"></i>
+                        <h3 class="mb-0">Student Mental Health Assessment</h3>
+                        <p class="mb-0 mt-2 opacity-75">Complete this confidential self-evaluation</p>
+                    </div>
+                </div>
+                <div class="card-body p-5">
+                    <form method="POST">
+                        <div class="mb-5">
+                            <h4 class="text-primary mb-4"><i class="fas fa-user-circle me-2"></i>Demographics</h4>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">Age</label>
+                                    <input type="number" class="form-control form-control-lg" name="age" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">Gender</label>
+                                    <select class="form-select form-select-lg" name="gender" required>
+                                        <option value="">Select Gender</option>
+                                        <option value="female">Female</option>
+                                        <option value="male">Male</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">Year of Study</label>
+                                    <select class="form-select form-select-lg" name="year" required>
+                                        <option value="1">Year 1</option>
+                                        <option value="2">Year 2</option>
+                                        <option value="3">Year 3</option>
+                                        <option value="4">Year 4</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-5">
+                            <h4 class="text-primary mb-4"><i class="fas fa-graduation-cap me-2"></i>Academic Information</h4>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Current CGPA</label>
+                                    <input type="number" step="0.01" class="form-control form-control-lg" name="cgpa" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-5">
+                            <h4 class="text-primary mb-4"><i class="fas fa-brain me-2"></i>Mental Health Assessment</h4>
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Depression Scale (0-10)</label>
+                                <input type="range" class="form-range slider-custom" min="0" max="10" name="depression">
+                                <div class="d-flex justify-content-between">
+                                    <small>0 - Not at all</small>
+                                    <small>10 - Extremely</small>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Anxiety Scale (0-10)</label>
+                                <input type="range" class="form-range slider-custom" min="0" max="10" name="anxiety">
+                                <div class="d-flex justify-content-between">
+                                    <small>0 - Not at all</small>
+                                    <small>10 - Extremely</small>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Panic Attacks Frequency</label>
+                                <input type="range" class="form-range slider-custom" min="0" max="10" name="panic">
+                                <div class="d-flex justify-content-between">
+                                    <small>0 - Never</small>
+                                    <small>10 - Daily</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg py-3 rounded-pill">
+                                <i class="fas fa-paper-plane me-2"></i>Submit Assessment
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border: none;
+        overflow: hidden;
+    }
+    .card-header {
+        border-bottom: none;
+    }
+    .form-control-lg, .form-select-lg {
+        padding: 0.75rem 1rem;
+        font-size: 1.05rem;
+    }
+    .slider-custom {
+        height: 8px;
+    }
+    .slider-custom::-webkit-slider-thumb {
+        width: 20px;
+        height: 20px;
+    }
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #4A90E2, #357ABD);
+    }
+</style>
+{% endblock %}
