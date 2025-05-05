@@ -1,3 +1,4 @@
 venv
 instance/database.db
-pycache/*
+__pycache__/
+*.pyc
