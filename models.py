@@ -6,7 +6,8 @@ db = SQLAlchemy()
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
+    username = db.Column(db.String(64), unique=True, nullable=False) # Student ID
+    email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
 
@@ -25,9 +26,8 @@ class Assessment(db.Model):
     # Demographics
     age = db.Column(db.Integer, nullable=False)
     gender = db.Column(db.Integer, nullable=False)  # 0: Female, 1: Male
-    university = db.Column(db.Integer, nullable=False)  # 0-14 for different universities
-    department = db.Column(db.Integer, nullable=False)  # 0-8 for different departments
-    academic_year = db.Column(db.Integer, nullable=False)  # 0-4 for different years
+    department = db.Column(db.String, nullable=False) 
+    academic_year = db.Column(db.String, nullable=False) 
     cgpa = db.Column(db.Float, nullable=False)
     waiver_scholarship = db.Column(db.Boolean, nullable=False)  # 0: No, 1: Yes
     
@@ -63,22 +63,10 @@ class Assessment(db.Model):
     movement_issues = db.Column(db.Integer, nullable=False)
     suicidal_thoughts = db.Column(db.Integer, nullable=False)
 
+    # Predictions
+    anxiety_score = db.Column(db.Integer, nullable=True)
+    stress_score = db.Column(db.Integer, nullable=True)
+    depression_score = db.Column(db.Integer, nullable=True)
+
     # Relationship with User
     user = db.relationship('User', backref=db.backref('assessments', lazy=True))
-    
-    def calculate_anxiety_score(self):
-        anxiety_fields = [self.nervous_anxious, self.worrying, self.trouble_relaxing,
-                         self.easily_annoyed, self.excessive_worry, self.restless, self.fearful]
-        return sum(anxiety_fields) / len(anxiety_fields)
-    
-    def calculate_stress_score(self):
-        stress_fields = [self.upset, self.lack_of_control, self.nervous_stress, self.inadequate_coping,
-                        self.confident, self.things_going_well,self.control_irritations, self.top_performance,
-                        self.angered_by_performance, self.overwhelmed]
-        return sum(stress_fields) / len(stress_fields)
-    
-    def calculate_depression_score(self):
-        depression_fields = [self.lack_of_interest, self.feeling_down, self.sleep_issues,
-                           self.fatigue, self.appetite_issues, self.self_doubt,
-                           self.concentration_issues, self.movement_issues, self.suicidal_thoughts]
-        return sum(depression_fields) / len(depression_fields)

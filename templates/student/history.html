@@ -9,6 +9,7 @@
                 <th>Anxiety</th>
                 <th>Stress</th>
                 <th>Depression</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
@@ -18,6 +19,11 @@
                 <td>{{ assessment.anxiety_label }}</td>
                 <td>{{ assessment.stress_label }}</td>
                 <td>{{ assessment.depression_label }}</td>
+                <td>
+                    <a href="{{ url_for('view_assessment', assessment_id=assessment.id) }}" class="btn btn-sm btn-primary">
+                        View
+                    </a>
+                </td>
             </tr>
             {% endfor %}
         </tbody>

@@ -4,6 +4,17 @@ from models import db, User, Assessment
 import traceback
 from datetime import datetime
 import pytz
+import joblib
+
+# Load models
+model_anx = joblib.load('models/logistic_regression_anxiety_model.pkl')
+model_str = joblib.load('models/logistic_regression_stress_model.pkl')
+model_dep = joblib.load('models/logistic_regression_depression_model.pkl')
+
+# Load scalers
+scaler_anx = joblib.load('models/scaler_anxiety.pkl')
+scaler_str = joblib.load('models/scaler_stress.pkl')
+scaler_dep = joblib.load('models/scaler_depression.pkl')
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-secret-key'
@@ -53,18 +64,16 @@ def login():
         return redirect(url_for('index'))
 
     if request.method == 'POST':
-        username = request.form.get('username')
+        student_id = request.form.get('student_id')
         password = request.form.get('password')
-        user = User.query.filter_by(username=username).first()
+
+        user = User.query.filter_by(username=student_id).first()
 
         if user and user.check_password(password):
             login_user(user)
-            # Redirect user based on their role
-            if user.is_admin:
-                return redirect(url_for('admin_dashboard'))
-            return redirect(url_for('student_dashboard'))
+            return redirect(url_for('admin_dashboard') if user.is_admin else url_for('student_dashboard'))
         else:
-            flash('Invalid username or password.', 'danger')
+            flash('Invalid Student ID or password.', 'danger')
 
     return render_template('login.html')
 
@@ -74,20 +83,26 @@ def register():
         return redirect(url_for('index'))
 
     if request.method == 'POST':
-        username = request.form.get('username')
+        student_id = request.form.get('student_id')
+        email = request.form.get('email')
         password = request.form.get('password')
-        confirm_password = request.form.get('confirm_password') 
+        confirm_password = request.form.get('confirm_password')
+
+        if not student_id.isdigit() and student_id != "admin":
+            print(student_id)
+            flash('Student ID must be digits only.', 'danger')
+            return redirect(url_for('register'))
 
         if password != confirm_password:
             flash('Passwords do not match.', 'danger')
             return redirect(url_for('register'))
 
-        existing_user = User.query.filter_by(username=username).first()
+        existing_user = User.query.filter_by(username=student_id).first()
         if existing_user:
-            flash('Username already taken.', 'danger')
+            flash('Student ID already registered.', 'danger')
             return redirect(url_for('register'))
 
-        new_user = User(username=username)
+        new_user = User(username=student_id, email=email)
         new_user.set_password(password)
         db.session.add(new_user)
         db.session.commit()
@@ -169,7 +184,7 @@ def assessment():
     if request.method == 'POST':
         try:
             # Validate all required fields are present
-            required_fields = ['age', 'gender', 'university', 'department', 'academic_year', 
+            required_fields = ['age', 'gender', 'department', 'academic_year', 
                              'cgpa', 'waiver_scholarship', 'nervous_anxious', 'worrying', 
                              'trouble_relaxing', 'easily_annoyed', 'excessive_worry', 
                              'restless', 'fearful', 'upset', 'lack_of_control', 
@@ -194,9 +209,8 @@ def assessment():
                 # Demographics
                 age=int(request.form.get('age')),
                 gender=int(request.form.get('gender')),
-                university=int(request.form.get('university')),
-                department=int(request.form.get('department')),
-                academic_year=int(request.form.get('academic_year')),
+                department=request.form.get('department'),
+                academic_year=request.form.get('academic_year'),
                 cgpa=float(request.form.get('cgpa')),
                 waiver_scholarship=bool(int(request.form.get('waiver_scholarship'))),
                 
@@ -237,10 +251,55 @@ def assessment():
             db.session.add(new_assessment)
             db.session.commit()
 
-            # Calculate scores
-            anxiety_score = new_assessment.calculate_anxiety_score()
-            stress_score = new_assessment.calculate_stress_score()
-            depression_score = new_assessment.calculate_depression_score()
+            # Extract relevant input for each model
+            input_dict_anxiety = {
+                'Worrying': new_assessment.worrying,
+                'Restless': new_assessment.restless,
+                'Nervous/Anxious': new_assessment.nervous_anxious,
+                'Excessive Worry ': new_assessment.excessive_worry,
+                'Trouble Relaxing ': new_assessment.trouble_relaxing,
+                'Easily Annoyed': new_assessment.easily_annoyed,
+                'Fearful ': new_assessment.fearful
+            }
+
+            input_dict_stress = {
+                'Overwhelmed': new_assessment.overwhelmed,
+                'Inadequate Coping': new_assessment.inadequate_coping,
+                'Angered by Performance': new_assessment.angered_by_performance,
+                'Lack of Control': new_assessment.lack_of_control,
+                'Confident': new_assessment.confident,
+                'Top Performance': new_assessment.top_performance,
+                'Nervous/Stress ': new_assessment.nervous_stress,
+                'Things Going Well': new_assessment.things_going_well,
+                'Control Irritations': new_assessment.control_irritations,
+                'Upset': new_assessment.upset
+            }
+
+            input_dict_depression = {
+                'Feeling Down': new_assessment.feeling_down,
+                'Lack of Interest': new_assessment.lack_of_interest,
+                'Suicidal Thoughts': new_assessment.suicidal_thoughts,
+                'Appetite Issues': new_assessment.appetite_issues,
+                'Fatigue': new_assessment.fatigue,
+                'Self-Doubt': new_assessment.self_doubt,
+                'Sleep Issues': new_assessment.sleep_issues,
+                'Concentration Issues': new_assessment.concentration_issues,
+                'Movement Issues': new_assessment.movement_issues
+            }
+
+            # Use models for prediction
+            anxiety_score = predict_with_scaler(input_dict_anxiety, model_anx, scaler_anx)
+            stress_score = predict_with_scaler(input_dict_stress, model_str, scaler_str)
+            depression_score = predict_with_scaler(input_dict_depression, model_dep, scaler_dep)
+
+            # Store predictions in the database model
+            new_assessment.anxiety_score = anxiety_score
+            new_assessment.stress_score = stress_score
+            new_assessment.depression_score = depression_score
+
+            # Add and commit to database
+            db.session.add(new_assessment)
+            db.session.commit()
 
             # Generate recommendations based on scores
             result = generate_recommendations(anxiety_score, stress_score, depression_score)
@@ -287,11 +346,34 @@ def view_history():
     
     # Calculate labels for each assessment
     for assessment in assessments:
-        assessment.anxiety_label = calculate_anxiety_label(assessment.calculate_anxiety_score())
-        assessment.stress_label = calculate_stress_label(assessment.calculate_stress_score())
-        assessment.depression_label = calculate_depression_label(assessment.calculate_depression_score())
+        assessment.anxiety_label = calculate_anxiety_label(assessment.anxiety_score)
+        assessment.stress_label = calculate_stress_label(assessment.stress_score)
+        assessment.depression_label = calculate_depression_label(assessment.depression_score)
     
     return render_template('student/history.html', assessments=assessments)
+
+@app.route('/student/assessment/<int:assessment_id>')
+@login_required
+def view_assessment(assessment_id):
+    # Fetch the assessment or 404 if not found
+    assessment = Assessment.query.get_or_404(assessment_id)
+
+    # Check access control
+    if assessment.user_id != current_user.id and not getattr(current_user, 'is_admin', False):
+        return redirect(url_for('index'))
+
+    # Helper functions for labels
+    def gender_label(code): return "Male" if code == 1 else "Female"
+    def bool_label(b): return "Yes" if b else "No"
+    def score_label(score): return ["Low", "Mild", "Moderate", "High", "Severe"][score] if score is not None else "N/A"
+
+    return render_template(
+        'view_assessment.html',
+        assessment=assessment,
+        gender_label=gender_label,
+        bool_label=bool_label,
+        score_label=score_label
+    )
 
 def calculate_anxiety_label(score):
     if score == 0:
@@ -318,6 +400,13 @@ def calculate_depression_label(score):
         return "Moderate Depression"
     else:
         return "Severe Depression"
+    
+def predict_with_scaler(input_dict, model, scaler):
+    import pandas as pd
+    df_input = pd.DataFrame([input_dict])
+    df_input = df_input[scaler.feature_names_in_]
+    scaled_input = scaler.transform(df_input)
+    return int(model.predict(scaled_input)[0])
 
 if __name__ == '__main__':
     app.run(debug=True)
