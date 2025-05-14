@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-success text-white py-4 rounded-top-4">
+                    <div class="text-center">
+                        <i class="fas fa-check-circle fa-2x mb-3"></i>
+                        <h3 class="mb-0">Assessment Results</h3>
+                    </div>
+                </div>
+                <div class="card-body p-5">
+                    <h4 class="text-primary mb-4">Your Results</h4>
+                    <p>Anxiety: {{ anxiety_label }}</p>
+                    <p>Stress: {{ stress_label }}</p>
+                    <p>Depression: {{ depression_label }}</p>
+                    
+                    <h4 class="text-primary mt-4 mb-4">Recommendations</h4>
+                    <p>{{ recommendations }}</p>
+
+                    <a href="{{ url_for('view_history') }}" class="btn btn-secondary mt-4">View Past Responses</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -92,5 +92,4 @@ python app.py
 This project is part of WQD7012 coursework at Universiti Malaya.
 
 ## License
-
 [MIT License](LICENSE)

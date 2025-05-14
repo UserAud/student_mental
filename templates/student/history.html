@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-5">
+    <h2 class="mb-4">Assessment History</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Anxiety</th>
+                <th>Stress</th>
+                <th>Depression</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for assessment in assessments %}
+            <tr>
+                <td>{{ assessment.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                <td>{{ assessment.anxiety_label }}</td>
+                <td>{{ assessment.stress_label }}</td>
+                <td>{{ assessment.depression_label }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

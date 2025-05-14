@@ -1,6 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container py-5">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
+    {% endwith %}
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <div class="card shadow-lg border-0 rounded-4">
@@ -12,69 +22,678 @@
                     </div>
                 </div>
                 <div class="card-body p-5">
-                    <form method="POST">
+                    <form method="POST" action="{{ url_for('assessment') }}">
+                   
+                        
                         <div class="mb-5">
                             <h4 class="text-primary mb-4"><i class="fas fa-user-circle me-2"></i>Demographics</h4>
                             <div class="row g-3">
                                 <div class="col-md-4">
                                     <label class="form-label fw-bold">Age</label>
-                                    <input type="number" class="form-control form-control-lg" name="age" required>
+                                    <input type="number" class="form-control form-control-lg" name="age" min="18" max="30" required>
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label fw-bold">Gender</label>
                                     <select class="form-select form-select-lg" name="gender" required>
                                         <option value="">Select Gender</option>
-                                        <option value="female">Female</option>
-                                        <option value="male">Male</option>
+                                        <option value="0">Female</option>
+                                        <option value="1">Male</option>
                                     </select>
                                 </div>
                                 <div class="col-md-4">
-                                    <label class="form-label fw-bold">Year of Study</label>
-                                    <select class="form-select form-select-lg" name="year" required>
-                                        <option value="1">Year 1</option>
-                                        <option value="2">Year 2</option>
-                                        <option value="3">Year 3</option>
-                                        <option value="4">Year 4</option>
+                                    <label class="form-label fw-bold">University</label>
+                                    <select class="form-select form-select-lg" name="university" required>
+                                        <option value="">Select University</option>
+                                        <option value="0">AIUB</option>
+                                        <option value="1">BRAC</option>
+                                        <option value="2">BAU</option>
+                                        <option value="3">BUET</option>
+                                        <option value="4">Daffodil</option>
+                                        <option value="5">DU</option>
+                                        <option value="6">DUET</option>
+                                        <option value="7">EWU</option>
+                                        <option value="8">IUB</option>
+                                        <option value="9">IUT</option>
+                                        <option value="10">NSU</option>
+                                        <option value="11">PSTU</option>
+                                        <option value="12">RU</option>
+                                        <option value="13">RUET</option>
+                                        <option value="14">UIU</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">Department</label>
+                                    <select class="form-select form-select-lg" name="department" required>
+                                        <option value="">Select Department</option>
+                                        <option value="0">Biological Sciences</option>
+                                        <option value="1">Business</option>
+                                        <option value="2">CS/IT</option>
+                                        <option value="3">Civil Eng</option>
+                                        <option value="4">EEE/ECE</option>
+                                        <option value="5">Env/Life Sci</option>
+                                        <option value="6">Mech Eng</option>
+                                        <option value="7">Other</option>
+                                        <option value="8">Missing</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">Academic Year</label>
+                                    <select class="form-select form-select-lg" name="academic_year" required>
+                                        <option value="">Select Year</option>
+                                        <option value="0">Foundation</option>
+                                        <option value="1">First</option>
+                                        <option value="2">Second</option>
+                                        <option value="3">Third</option>
+                                        <option value="4">Final</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">Current CGPA</label>
+                                    <input type="number" step="0.01" class="form-control form-control-lg" name="cgpa" min="2.50" max="4.00" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">Did you receive a waiver or scholarship at your university?</label>
+                                    <select class="form-select form-select-lg" name="waiver_scholarship" required>
+                                        <option value="">Select Option</option>
+                                        <option value="0">No</option>
+                                        <option value="1">Yes</option>
                                     </select>
                                 </div>
                             </div>
                         </div>
 
                         <div class="mb-5">
-                            <h4 class="text-primary mb-4"><i class="fas fa-graduation-cap me-2"></i>Academic Information</h4>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label class="form-label fw-bold">Current CGPA</label>
-                                    <input type="number" step="0.01" class="form-control form-control-lg" name="cgpa" required>
+                            <h4 class="text-primary mb-4"><i class="fas fa-brain me-2"></i>Anxiety Indicators</h4>
+                            
+                            <div class="mb-4">
+                                
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">1. In a semester, how often you felt nervous, anxious or on edge due to academic pressure?</label>
+                                    <div class="likert-scale">
+                                        <div class="likert-numbers">
+                                            <div></div>
+                                            {% for i in range(5) %}
+                                            <div>{{ i }}</div>
+                                            {% endfor %}
+                                            <div></div>
+                                        </div>
+                                        <div class="likert-options">
+                                            <div class="likert-label start">Never</div>
+                                            {% for i in range(5) %}
+                                            <div class="likert-radio">
+                                                <input class="form-check-input" type="radio" name="nervous_anxious" value="{{ i }}" {% if i == 0 %}required{% endif %}>
+                                            </div>
+                                            {% endfor %}
+                                            <div class="likert-label end">Always</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">2. In a semester, how often have you been unable to stop worrying about your academic affairs?</label>
+                                <div class="likert-scale">
+                                    <div class="likert-numbers">
+                                        <div></div>
+                                        {% for i in range(5) %}
+                                        <div>{{ i }}</div>
+                                        {% endfor %}
+                                        <div></div>
+                                    </div>
+                                    <div class="likert-options">
+                                        <div class="likert-label start">Never</div>
+                                        {% for i in range(5) %}
+                                        <div class="likert-radio">
+                                            <input class="form-check-input" type="radio" name="worrying" value="{{ i }}" {% if i == 0 %}required{% endif %}>
+                                        </div>
+                                        {% endfor %}
+                                        <div class="likert-label end">Always</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">3. In a semester, how often have you had trouble relaxing due to academic pressure?</label>
+                                    <div class="likert-scale">
+                                        <div class="likert-numbers">
+                                            <div></div>
+                                            {% for i in range(5) %}
+                                            <div>{{ i }}</div>
+                                            {% endfor %}
+                                            <div></div>
+                                        </div>
+                                        <div class="likert-options">
+                                            <div class="likert-label start">Never</div>
+                                            {% for i in range(5) %}
+                                            <div class="likert-radio">
+                                                <input class="form-check-input" type="radio" name="trouble_relaxing" value="{{ i }}" {% if i == 0 %}required{% endif %}>
+                                            </div>
+                                            {% endfor %}
+                                            <div class="likert-label end">Always</div>
+                                        </div>
+                                    </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">4. In a semester, how often have you been easily annoyed or irritated because of academic pressure?</label>
+                                    <div class="likert-scale">
+                                        <div class="likert-numbers">
+                                            <div></div>
+                                            {% for i in range(5) %}
+                                            <div>{{ i }}</div>
+                                            {% endfor %}
+                                            <div></div>
+                                        </div>
+                                        <div class="likert-options">
+                                            <div class="likert-label start">Never</div>
+                                            {% for i in range(5) %}
+                                            <div class="likert-radio">
+                                                <input class="form-check-input" type="radio" name="easily_annoyed" value="{{ i }}" {% if i == 0 %}required{% endif %}>
+                                            </div>
+                                            {% endfor %}
+                                            <div class="likert-label end">Always</div>
+                                        </div>
+                                    </div>    
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">5. In a semester, how often have you worried too much about academic affairs?</label>
+                                <div class="likert-scale">
+                                    <div class="likert-numbers">
+                                        <div></div>
+                                        {% for i in range(5) %}
+                                        <div>{{ i }}</div>
+                                        {% endfor %}
+                                        <div></div>
+                                    </div>
+                                    <div class="likert-options">
+                                        <div class="likert-label start">Never</div>
+                                        {% for i in range(5) %}
+                                        <div class="likert-radio">
+                                            <input class="form-check-input" type="radio" name="excessive_worry" value="{{ i }}" {% if i == 0 %}required{% endif %}>
+                                        </div>
+                                        {% endfor %}
+                                        <div class="likert-label end">Always</div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">6. In a semester, how often have you been so restless due to academic pressure that it is hard to sit still?</label>
+                                <div class="likert-scale">
+                                    <div class="likert-numbers">
+                                        <div></div>
+                                        {% for i in range(5) %}
+                                        <div>{{ i }}</div>
+                                        {% endfor %}
+                                        <div></div>
+                                    </div>
+                                    <div class="likert-options">
+                                        <div class="likert-label start">Never</div>
+                                        {% for i in range(5) %}
+                                        <div class="likert-radio">
+                                            <input class="form-check-input" type="radio" name="restless" value="{{ i }}" {% if i == 0 %}required{% endif %}>
+                                        </div>
+                                        {% endfor %}
+                                        <div class="likert-label end">Always</div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">7. In a semester, how often have you felt afraid, as if something awful might happen?</label>
+                                <div class="likert-scale">
+                                    <div class="likert-numbers">
+                                        <div></div>
+                                        {% for i in range(5) %}
+                                        <div>{{ i }}</div>
+                                        {% endfor %}
+                                        <div></div>
+                                    </div>
+                                    <div class="likert-options">
+                                        <div class="likert-label start">Never</div>
+                                        {% for i in range(5) %}
+                                        <div class="likert-radio">
+                                            <input class="form-check-input" type="radio" name="fearful" value="{{ i }}" {% if i == 0 %}required{% endif %}>
+                                        </div>
+                                        {% endfor %}
+                                        <div class="likert-label end">Always</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
                         <div class="mb-5">
-                            <h4 class="text-primary mb-4"><i class="fas fa-brain me-2"></i>Mental Health Assessment</h4>
+                            <h4 class="text-primary mb-4"><i class="fas fa-exclamation-triangle me-2"></i>Stress Indicators</h4>
+                            
                             <div class="mb-4">
-                                <label class="form-label fw-bold">Depression Scale (0-10)</label>
-                                <input type="range" class="form-range slider-custom" min="0" max="10" name="depression">
-                                <div class="d-flex justify-content-between">
-                                    <small>0 - Not at all</small>
-                                    <small>10 - Extremely</small>
+                                <label class="form-label fw-bold">1. In a semester, how often have you felt upset due to something that happened in your academic affairs?</label>
+                                    <div class="likert-scale">
+                                        <div class="likert-numbers">
+                                            <div></div>
+                                            {% for i in range(5) %}
+                                            <div>{{ i }}</div>
+                                            {% endfor %}
+                                            <div></div>
+                                        </div>
+                                        <div class="likert-options">
+                                            <div class="likert-label start">Never</div>
+                                            {% for i in range(5) %}
+                                            <div class="likert-radio">
+                                                <input class="form-check-input" type="radio" name="upset" value="{{ i }}" {% if i == 0 %}required{% endif %}>
+                                            </div>
+                                            {% endfor %}
+                                            <div class="likert-label end">Always</div>
+                                        </div>
+                                    </div>    
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">2. In a semester, how often you felt as if you were unable to control important things in your academic affairs?</label>
+                                    <div class="likert-scale">
+                                        <div class="likert-numbers">
+                                            <div></div>
+                                            {% for i in range(5) %}
+                                            <div>{{ i }}</div>
+                                            {% endfor %}
+                                            <div></div>
+                                        </div>
+                                        <div class="likert-options">
+                                            <div class="likert-label start">Never</div>
+                                            {% for i in range(5) %}
+                                            <div class="likert-radio">
+                                                <input class="form-check-input" type="radio" name="lack_of_control" value="{{ i }}" {% if i == 0 %}required{% endif %}>
+                                            </div>
+                                            {% endfor %}
+                                            <div class="likert-label end">Always</div>
+                                        </div>
+                                    </div>    
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">3. In a semester, how often you felt nervous and stressed because of academic pressure?</label>
+                                <div class="likert-scale">
+                                    <div class="likert-numbers">
+                                        <div></div>
+                                        {% for i in range(5) %}
+                                        <div>{{ i }}</div>
+                                        {% endfor %}
+                                        <div></div>
+                                    </div>
+                                    <div class="likert-options">
+                                        <div class="likert-label start">Never</div>
+                                        {% for i in range(5) %}
+                                        <div class="likert-radio">
+                                            <input class="form-check-input" type="radio" name="nervous_stress" value="{{ i }}" {% if i == 0 %}required{% endif %}>
+                                        </div>
+                                        {% endfor %}
+                                        <div class="likert-label end">Always</div>
+                                    </div>
                                 </div>
                             </div>
+                            
                             <div class="mb-4">
-                                <label class="form-label fw-bold">Anxiety Scale (0-10)</label>
-                                <input type="range" class="form-range slider-custom" min="0" max="10" name="anxiety">
-                                <div class="d-flex justify-content-between">
-                                    <small>0 - Not at all</small>
-                                    <small>10 - Extremely</small>
+                                <label class="form-label fw-bold">4. In a semester, how often you felt as if you could not cope with all the mandatory academic activities?</label>
+                                <div class="likert-scale">
+                                    <div class="likert-numbers">
+                                        <div></div>
+                                        {% for i in range(5) %}
+                                        <div>{{ i }}</div>
+                                        {% endfor %}
+                                        <div></div>
+                                    </div>
+                                    <div class="likert-options">
+                                        <div class="likert-label start">Never</div>
+                                        {% for i in range(5) %}
+                                        <div class="likert-radio">
+                                            <input class="form-check-input" type="radio" name="inadequate_coping" value="{{ i }}" {% if i == 0 %}required{% endif %}>
+                                        </div>
+                                        {% endfor %}
+                                        <div class="likert-label end">Always</div>
+                                    </div>
                                 </div>
                             </div>
+                            
                             <div class="mb-4">
-                                <label class="form-label fw-bold">Panic Attacks Frequency</label>
-                                <input type="range" class="form-range slider-custom" min="0" max="10" name="panic">
-                                <div class="d-flex justify-content-between">
-                                    <small>0 - Never</small>
-                                    <small>10 - Daily</small>
+                                <label class="form-label fw-bold">5. In a semester, how often you felt confident about your ability to handle your academic / university problems?</label>
+                                <div class="likert-scale">
+                                    <div class="likert-numbers">
+                                        <div></div>
+                                        {% for i in range(5) %}
+                                        <div>{{ i }}</div>
+                                        {% endfor %}
+                                        <div></div>
+                                    </div>
+                                    <div class="likert-options">
+                                        <div class="likert-label start">Never</div>
+                                        {% for i in range(5) %}
+                                        <div class="likert-radio">
+                                            <input class="form-check-input" type="radio" name="confident" value="{{ i }}" {% if i == 0 %}required{% endif %}>
+                                        </div>
+                                        {% endfor %}
+                                        <div class="likert-label end">Always</div>
+                                    </div>
                                 </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">6. In a semester, how often you felt as if things in your academic life is going on your way?</label>
+                                <div class="likert-scale">
+                                    <div class="likert-numbers">
+                                        <div></div>
+                                        {% for i in range(5) %}
+                                        <div>{{ i }}</div>
+                                        {% endfor %}
+                                        <div></div>
+                                    </div>
+                                    <div class="likert-options">
+                                        <div class="likert-label start">Never</div>
+                                        {% for i in range(5) %}
+                                        <div class="likert-radio">
+                                            <input class="form-check-input" type="radio" name="things_going_well" value="{{ i }}" {% if i == 0 %}required{% endif %}>
+                                        </div>
+                                        {% endfor %}
+                                        <div class="likert-label end">Always</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">7. In a semester, how often are you able to control irritations in your academic / university affairs?</label>
+                                <div class="likert-scale">
+                                    <div class="likert-numbers">
+                                        <div></div>
+                                        {% for i in range(5) %}
+                                        <div>{{ i }}</div>
+                                        {% endfor %}
+                                        <div></div>
+                                    </div>
+                                    <div class="likert-options">
+                                        <div class="likert-label start">Never</div>
+                                        {% for i in range(5) %}
+                                        <div class="likert-radio">
+                                            <input class="form-check-input" type="radio" name="control_irritations" value="{{ i }}" {% if i == 0 %}required{% endif %}>
+                                        </div>
+                                        {% endfor %}
+                                        <div class="likert-label end">Always</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">8. In a semester, how often you felt as if your academic performance was on top?</label>
+                                <div class="likert-scale">
+                                    <div class="likert-numbers">
+                                        <div></div>
+                                        {% for i in range(5) %}
+                                        <div>{{ i }}</div>
+                                        {% endfor %}
+                                        <div></div>
+                                    </div>
+                                    <div class="likert-options">
+                                        <div class="likert-label start">Never</div>
+                                        {% for i in range(5) %}
+                                        <div class="likert-radio">
+                                            <input class="form-check-input" type="radio" name="top_performance" value="{{ i }}" {% if i == 0 %}required{% endif %}>
+                                        </div>
+                                        {% endfor %}
+                                        <div class="likert-label end">Always</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">9. In a semester, how often you got angered due to bad performance or low grades that is beyond your control?</label>
+                                <div class="likert-scale">
+                                    <div class="likert-numbers">
+                                        <div></div>
+                                        {% for i in range(5) %}
+                                        <div>{{ i }}</div>
+                                        {% endfor %}
+                                        <div></div>
+                                    </div>
+                                    <div class="likert-options">
+                                        <div class="likert-label start">Never</div>
+                                        {% for i in range(5) %}
+                                        <div class="likert-radio">
+                                            <input class="form-check-input" type="radio" name="angered_by_performance" value="{{ i }}" {% if i == 0 %}required{% endif %}>
+                                        </div>
+                                        {% endfor %}
+                                        <div class="likert-label end">Always</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">10. In a semester, how often you felt as if academic difficulties are piling up so high that you could not overcome them?</label>
+                                <div class="likert-scale">
+                                    <div class="likert-numbers">
+                                        <div></div>
+                                        {% for i in range(5) %}
+                                        <div>{{ i }}</div>
+                                        {% endfor %}
+                                        <div></div>
+                                    </div>
+                                    <div class="likert-options">
+                                        <div class="likert-label start">Never</div>
+                                        {% for i in range(5) %}
+                                        <div class="likert-radio">
+                                            <input class="form-check-input" type="radio" name="overwhelmed" value="{{ i }}" {% if i == 0 %}required{% endif %}>
+                                        </div>
+                                        {% endfor %}
+                                        <div class="likert-label end">Always</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-5">
+                            <h4 class="text-primary mb-4"><i class="fas fa-heartbeat me-2"></i>Depression Indicators</h4>
+                            
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">1. In a semester, how often have you had little interest or pleasure in doing things?</label>
+                                <div class="likert-scale">
+                                    <div class="likert-numbers">
+                                        <div></div>
+                                        {% for i in range(5) %}
+                                        <div>{{ i }}</div>
+                                        {% endfor %}
+                                        <div></div>
+                                    </div>
+                                    <div class="likert-options">
+                                        <div class="likert-label start">Never</div>
+                                        {% for i in range(5) %}
+                                        <div class="likert-radio">
+                                            <input class="form-check-input" type="radio" name="lack_of_interest" value="{{ i }}" {% if i == 0 %}required{% endif %}>
+                                        </div>
+                                        {% endfor %}
+                                        <div class="likert-label end">Always</div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">2. In a semester, how often have you been feeling down, depressed or hopeless?</label>
+                                <div class="likert-scale">
+                                    <div class="likert-numbers">
+                                        <div></div>
+                                        {% for i in range(5) %}
+                                        <div>{{ i }}</div>
+                                        {% endfor %}
+                                        <div></div>
+                                    </div>
+                                    <div class="likert-options">
+                                        <div class="likert-label start">Never</div>
+                                        {% for i in range(5) %}
+                                        <div class="likert-radio">
+                                            <input class="form-check-input" type="radio" name="feeling_down" value="{{ i }}" {% if i == 0 %}required{% endif %}>
+                                        </div>
+                                        {% endfor %}
+                                        <div class="likert-label end">Always</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">3. In a semester, how often have you had trouble falling or staying asleep, or sleeping too much?</label>
+                                <div class="likert-scale">
+                                    <div class="likert-numbers">
+                                        <div></div>
+                                        {% for i in range(5) %}
+                                        <div>{{ i }}</div>
+                                        {% endfor %}
+                                        <div></div>
+                                    </div>
+                                    <div class="likert-options">
+                                        <div class="likert-label start">Never</div>
+                                        {% for i in range(5) %}
+                                        <div class="likert-radio">
+                                            <input class="form-check-input" type="radio" name="sleep_issues" value="{{ i }}" {% if i == 0 %}required{% endif %}>
+                                        </div>
+                                        {% endfor %}
+                                        <div class="likert-label end">Always</div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">4. In a semester, how often have you been feeling tired or having little energy?</label>
+                                <div class="likert-scale">
+                                    <div class="likert-numbers">
+                                        <div></div>
+                                        {% for i in range(5) %}
+                                        <div>{{ i }}</div>
+                                        {% endfor %}
+                                        <div></div>
+                                    </div>
+                                    <div class="likert-options">
+                                        <div class="likert-label start">Never</div>
+                                        {% for i in range(5) %}
+                                        <div class="likert-radio">
+                                            <input class="form-check-input" type="radio" name="fatigue" value="{{ i }}" {% if i == 0 %}required{% endif %}>
+                                        </div>
+                                        {% endfor %}
+                                        <div class="likert-label end">Always</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">5. In a semester, how often have you had poor appetite or overeating?</label>
+                                <div class="likert-scale">
+                                    <div class="likert-numbers">
+                                        <div></div>
+                                        {% for i in range(5) %}
+                                        <div>{{ i }}</div>
+                                        {% endfor %}
+                                        <div></div>
+                                    </div>
+                                    <div class="likert-options">
+                                        <div class="likert-label start">Never</div>
+                                        {% for i in range(5) %}
+                                        <div class="likert-radio">
+                                            <input class="form-check-input" type="radio" name="appetite_issues" value="{{ i }}" {% if i == 0 %}required{% endif %}>
+                                        </div>
+                                        {% endfor %}
+                                        <div class="likert-label end">Always</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">6. In a semester, how often have you been feeling bad about yourself - or that you are a failure or let others down?</label>
+                                <div class="likert-scale">
+                                    <div class="likert-numbers">
+                                        <div></div>
+                                        {% for i in range(5) %}
+                                        <div>{{ i }}</div>
+                                        {% endfor %}
+                                        <div></div>
+                                    </div>
+                                    <div class="likert-options">
+                                        <div class="likert-label start">Never</div>
+                                        {% for i in range(5) %}
+                                        <div class="likert-radio">
+                                            <input class="form-check-input" type="radio" name="self_doubt" value="{{ i }}" {% if i == 0 %}required{% endif %}>
+                                        </div>
+                                        {% endfor %}
+                                        <div class="likert-label end">Always</div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">7. In a semester, how often have you been having trouble concentrating on things, such as reading or watching TV?</label>
+                                <div class="likert-scale">
+                                    <div class="likert-numbers">
+                                        <div></div>
+                                        {% for i in range(5) %}
+                                        <div>{{ i }}</div>
+                                        {% endfor %}
+                                        <div></div>
+                                    </div>
+                                    <div class="likert-options">
+                                        <div class="likert-label start">Never</div>
+                                        {% for i in range(5) %}
+                                        <div class="likert-radio">
+                                            <input class="form-check-input" type="radio" name="concentration_issues" value="{{ i }}" {% if i == 0 %}required{% endif %}>
+                                        </div>
+                                        {% endfor %}
+                                        <div class="likert-label end">Always</div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">8. In a semester, how often have you moved or spoke too slowly, or more than usual due to restlessness?</label>
+                                <div class="likert-scale">
+                                    <div class="likert-numbers">
+                                        <div></div>
+                                        {% for i in range(5) %}
+                                        <div>{{ i }}</div>
+                                        {% endfor %}
+                                        <div></div>
+                                    </div>
+                                    <div class="likert-options">
+                                        <div class="likert-label start">Never</div>
+                                        {% for i in range(5) %}
+                                        <div class="likert-radio">
+                                            <input class="form-check-input" type="radio" name="movement_issues" value="{{ i }}" {% if i == 0 %}required{% endif %}>
+                                        </div>
+                                        {% endfor %}
+                                        <div class="likert-label end">Always</div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">9. In a semester, how often have you had thoughts that you would be better off dead, or of hurting yourself?</label>
+                                <div class="likert-scale">
+                                    <div class="likert-numbers">
+                                        <div></div>
+                                        {% for i in range(5) %}
+                                        <div>{{ i }}</div>
+                                        {% endfor %}
+                                        <div></div>
+                                    </div>
+                                    <div class="likert-options">
+                                        <div class="likert-label start">Never</div>
+                                        {% for i in range(5) %}
+                                        <div class="likert-radio">
+                                            <input class="form-check-input" type="radio" name="suicidal_thoughts" value="{{ i }}" {% if i == 0 %}required{% endif %}>
+                                        </div>
+                                        {% endfor %}
+                                        <div class="likert-label end">Always</div>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
 
@@ -102,15 +721,116 @@
         padding: 0.75rem 1rem;
         font-size: 1.05rem;
     }
-    .slider-custom {
-        height: 8px;
+    
+    /* Slider styling with improved bubble positioning */
+    .range-wrap {
+        position: relative;
+        margin: 0 auto 1rem;
+        padding-top: 30px; /* Add padding to make room for the bubble */
     }
-    .slider-custom::-webkit-slider-thumb {
-        width: 20px;
-        height: 20px;
+    .range {
+        width: 100%;
+        cursor: pointer;
     }
-    .bg-gradient-primary {
-        background: linear-gradient(135deg, #4A90E2, #357ABD);
+    .bubble {
+        background: #007bff;
+        color: white;
+        padding: 2px 8px;
+        position: absolute;
+        border-radius: 4px;
+        top: 0; /* Position at the top of the container */
+        font-weight: bold;
+        font-size: 0.8rem;
+        min-width: 24px;
+        text-align: center;
+        z-index: 5; /* Ensure bubble is above other elements */
+    }
+    .bubble::after {
+        content: "";
+        position: absolute;
+        width: 0;
+        height: 0;
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-top: 5px solid #007bff;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    .likert-scale {
+        max-width: 500px;
+        margin: 0 auto;
+    }
+    
+    .likert-numbers {
+        display: grid;
+        grid-template-columns: 100px repeat(5, 1fr) 100px;
+        text-align: center;
+        margin-bottom: 0.5rem;
+    }
+    
+    .likert-options {
+        display: grid;
+        grid-template-columns: 100px repeat(5, 1fr) 100px;
+        align-items: center;
+    }
+    
+    .likert-label {
+        font-size: 0.9rem;
+    }
+    
+    .likert-label.start {
+        text-align: left;
+    }
+    
+    .likert-label.end {
+        text-align: right;
+    }
+    
+    .likert-radio {
+        justify-self: center;
     }
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const allRanges = document.querySelectorAll(".range-wrap");
+        
+        allRanges.forEach(wrap => {
+            const range = wrap.querySelector(".range");
+            const bubble = wrap.querySelector(".bubble");
+            
+            range.addEventListener("input", () => {
+                setBubble(range, bubble);
+            });
+            
+            // Initialize the bubble position
+            setBubble(range, bubble);
+        });
+        
+        function setBubble(range, bubble) {
+            const val = range.value;
+            const min = range.min ? range.min : 0;
+            const max = range.max ? range.max : 100;
+            const newVal = Number(((val - min) * 100) / (max - min));
+            
+            bubble.innerHTML = val;
+            
+            // Fixed positioning for value 0
+            if (val == 0) {
+                // When at minimum (0), position bubble at the start of the slider
+                bubble.style.left = '0';
+                bubble.style.transform = 'translateX(0)';
+            } else if (val == max) {
+                // When at maximum, position bubble at the end of the slider
+                bubble.style.left = '100%';
+                bubble.style.transform = 'translateX(-100%)';
+            } else {
+                // For values in between, use percentage positioning
+                bubble.style.left = `${newVal}%`;
+                bubble.style.transform = 'translateX(-50%)';
+            }
+        }
+    });
+</script>
 {% endblock %}
