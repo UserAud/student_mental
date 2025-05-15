@@ -13,19 +13,19 @@
                     <div class="mb-3">
                         <h6>Gender</h6>
                         <div class="btn-group w-100" role="group" aria-label="Gender Filter">
-                            <input type="radio" class="btn-check" name="gender" id="gender_all" autocomplete="off" checked>
+                            <input type="radio" class="btn-check" name="gender" id="gender_all" autocomplete="off" checked onchange="applyFilters()">
                             <label class="btn btn-outline-primary" for="gender_all">All</label>
 
-                            <input type="radio" class="btn-check" name="gender" id="gender_female" autocomplete="off">
+                            <input type="radio" class="btn-check" name="gender" id="gender_female" autocomplete="off" onchange="applyFilters()">
                             <label class="btn btn-outline-primary" for="gender_female">Female</label>
 
-                            <input type="radio" class="btn-check" name="gender" id="gender_male" autocomplete="off">
+                            <input type="radio" class="btn-check" name="gender" id="gender_male" autocomplete="off" onchange="applyFilters()">
                             <label class="btn btn-outline-primary" for="gender_male">Male</label>
                         </div>
                     </div>
                     <div class="mb-3">
                         <label for="course" class="form-label fw-bold">Course</label>
-                        <select id="course" class="form-select">
+                        <select id="course" class="form-select" onchange="applyFilters()">
                             <option selected>All Courses</option>
                             <option>Engineering</option>
                             <!-- Add other courses -->
@@ -34,23 +34,23 @@
                     <div>
                         <h6>Year of Study</h6>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="year_all" checked>
+                            <input class="form-check-input" type="checkbox" id="year_all" checked onchange="applyFilters()">
                             <label class="form-check-label" for="year_all">All</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="year1" checked>
+                            <input class="form-check-input" type="checkbox" id="year1" checked onchange="applyFilters()">
                             <label class="form-check-label" for="year1">Year 1</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="year2" checked>
+                            <input class="form-check-input" type="checkbox" id="year2" checked onchange="applyFilters()">
                             <label class="form-check-label" for="year2">Year 2</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="year3" checked>
+                            <input class="form-check-input" type="checkbox" id="year3" checked onchange="applyFilters()">
                             <label class="form-check-label" for="year3">Year 3</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="year4" checked>
+                            <input class="form-check-input" type="checkbox" id="year4" checked onchange="applyFilters()">
                             <label class="form-check-label" for="year4">Year 4</label>
                         </div>
                     </div>
@@ -268,6 +268,18 @@ function contactStudent(studentId) {
     var contactModal = new bootstrap.Modal(document.getElementById('contactModal'));
     // Optionally pre-fill form fields based on studentId
     contactModal.show();
+}
+
+function applyFilters() {
+    const selectedGender = document.querySelector('input[name="gender"]:checked').id;
+    const selectedCourse = document.getElementById('course').value;
+    const selectedYears = Array.from(document.querySelectorAll('input[id^="year"]:checked')).map(cb => cb.id);
+
+    console.log("Filters applied:", { selectedGender, selectedCourse, selectedYears });
+
+    // TODO: Use fetch or update logic to filter dashboard content via API
+    // Example (optional):
+    // fetch(`/dashboard?gender=${selectedGender}&course=${selectedCourse}&years=${selectedYears.join(',')}`)
 }
 
 // Handle contact form submission
