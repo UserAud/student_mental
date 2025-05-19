@@ -413,9 +413,9 @@ def calculate_stress_label(score):
         return "Moderate Stress"
 
 def calculate_depression_label(score):
-    if score in [0, 1, 4]:
+    if score == 0:
         return "No or Mild Depression"
-    elif score in [2, 3]:
+    elif score == 1:
         return "Moderate Depression"
     else:
         return "Severe Depression"
