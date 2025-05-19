@@ -1,74 +1,107 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container mt-4">
-    <h2>Assessment Details</h2>
-    <p><span class="fw-bold">Date:</span> {{ assessment.timestamp.strftime('%Y-%m-%d %H:%M') }}</p>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-primary text-white py-4 rounded-top-4">
+                    <div class="text-center">
+                        <i class="fas fa-clipboard-list fa-2x mb-3"></i>
+                        <h3 class="mb-0">Assessment Details</h3>
+                        <p class="mb-0 mt-2">{{ assessment.timestamp.strftime('%Y-%m-%d %H:%M') }}</p>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <!-- Anxiety Indicators -->
+                    <div class="mb-4">
+                        <h4 class="text-primary mb-3"><i class="fas fa-brain me-2"></i>Anxiety Indicators</h4>
+                        <div class="table-responsive">
+                            <table class="table table-hover border">
+                                <tbody>
+                                    <tr><th><span class="fw-bold">In a semester, how often you felt nervous, anxious or on edge due to academic pressure?</span></th><td>{{ score_label(assessment.nervous_anxious) }}</td></tr>
+                                    <tr><th><span class="fw-bold">In a semester, how often have you been unable to stop worrying about your academic affairs?</span></th><td>{{ score_label(assessment.worrying) }}</td></tr>
+                                    <tr><th><span class="fw-bold">In a semester, how often have you had trouble relaxing due to academic pressure?</span></th><td>{{ score_label(assessment.trouble_relaxing) }}</td></tr>
+                                    <tr><th><span class="fw-bold">In a semester, how often have you been easily annoyed or irritated because of academic pressure?</span></th><td>{{ score_label(assessment.easily_annoyed) }}</td></tr>
+                                    <tr><th><span class="fw-bold">In a semester, how often have you worried too much about academic affairs?</span></th><td>{{ score_label(assessment.excessive_worry) }}</td></tr>
+                                    <tr><th><span class="fw-bold">In a semester, how often have you been so restless due to academic pressure that it is hard to sit still?</span></th><td>{{ score_label(assessment.restless) }}</td></tr>
+                                    <tr><th><span class="fw-bold">In a semester, how often have you felt afraid, as if something awful might happen?</span></th><td>{{ score_label(assessment.fearful) }}</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
 
-    <h4>Demographics</h4>
-    <table class="table table-bordered">
-        <tbody>
-            <tr><th><span class="fw-bold">Age</span></th><td>{{ assessment.age }}</td></tr>
-            <tr><th><span class="fw-bold">Gender</span></th><td>{{ gender_label(assessment.gender) }}</td></tr>
-            <tr><th><span class="fw-bold">Department Code</span></th><td>{{ assessment.department }}</td></tr>
-            <tr><th><span class="fw-bold">Academic Year</span></th><td>{{ assessment.academic_year }}</td></tr>
-            <tr><th><span class="fw-bold">CGPA</span></th><td>{{ assessment.cgpa }}</td></tr>
-            <tr><th><span class="fw-bold">Waiver/Scholarship</span></th><td>{{ bool_label(assessment.waiver_scholarship) }}</td></tr>
-        </tbody>
-    </table>
+                    <!-- Stress Indicators -->
+                    <div class="mb-4">
+                        <h4 class="text-primary mb-3"><i class="fas fa-exclamation-triangle me-2"></i>Stress Indicators</h4>
+                        <div class="table-responsive">
+                            <table class="table table-hover border">
+                                <tbody>
+                                    <tr><th><span class="fw-bold">In a semester, how often have you felt upset due to something that happened in your academic affairs?</span></th><td>{{ score_label(assessment.upset) }}</td></tr>
+                                    <tr><th><span class="fw-bold">In a semester, how often you felt as if you were unable to control important things in your academic affairs?</span></th><td>{{ score_label(assessment.lack_of_control) }}</td></tr>
+                                    <tr><th><span class="fw-bold">In a semester, how often you felt nervous and stressed because of academic pressure?</span></th><td>{{ score_label(assessment.nervous_stress) }}</td></tr>
+                                    <tr><th><span class="fw-bold">In a semester, how often you felt as if you could not cope with all the mandatory academic activities?</span></th><td>{{ score_label(assessment.inadequate_coping) }}</td></tr>
+                                    <tr><th><span class="fw-bold">In a semester, how often you felt confident about your ability to handle your academic / university problems?</span></th><td>{{ score_label(assessment.confident) }}</td></tr>
+                                    <tr><th><span class="fw-bold">In a semester, how often you felt as if things in your academic life is going on your way?</span></th><td>{{ score_label(assessment.things_going_well) }}</td></tr>
+                                    <tr><th><span class="fw-bold">In a semester, how often are you able to control irritations in your academic / university affairs?</span></th><td>{{ score_label(assessment.control_irritations) }}</td></tr>
+                                    <tr><th><span class="fw-bold">In a semester, how often you felt as if your academic performance was on top?</span></th><td>{{ score_label(assessment.top_performance) }}</td></tr>
+                                    <tr><th><span class="fw-bold">In a semester, how often you got angered due to bad performance or low grades that is beyond your control?</span></th><td>{{ score_label(assessment.angered_by_performance) }}</td></tr>
+                                    <tr><th><span class="fw-bold">In a semester, how often you felt as if academic difficulties are piling up so high that you could not overcome them?</span></th><td>{{ score_label(assessment.overwhelmed) }}</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
 
-    <h4>Anxiety Indicators</h4>
-    <table class="table table-bordered">
-        <tbody>
-            <tr><th><span class="fw-bold">In a semester, how often you felt nervous, anxious or on edge due to academic pressure?</span></th><td>{{ score_label(assessment.nervous_anxious) }}</td></tr>
-            <tr><th><span class="fw-bold">In a semester, how often have you been unable to stop worrying about your academic affairs?</span></th><td>{{ score_label(assessment.worrying) }}</td></tr>
-            <tr><th><span class="fw-bold">In a semester, how often have you had trouble relaxing due to academic pressure?</span></th><td>{{ score_label(assessment.trouble_relaxing) }}</td></tr>
-            <tr><th><span class="fw-bold">In a semester, how often have you been easily annoyed or irritated because of academic pressure?</span></th><td>{{ score_label(assessment.easily_annoyed) }}</td></tr>
-            <tr><th><span class="fw-bold">In a semester, how often have you worried too much about academic affairs?</span></th><td>{{ score_label(assessment.excessive_worry) }}</td></tr>
-            <tr><th><span class="fw-bold">In a semester, how often have you been so restless due to academic pressure that it is hard to sit still?</span></th><td>{{ score_label(assessment.restless) }}</td></tr>
-            <tr><th><span class="fw-bold">In a semester, how often have you felt afraid, as if something awful might happen?</span></th><td>{{ score_label(assessment.fearful) }}</td></tr>
-        </tbody>
-    </table>
+                    <!-- Depression Indicators -->
+                    <div class="mb-4">
+                        <h4 class="text-primary mb-3"><i class="fas fa-heartbeat me-2"></i>Depression Indicators</h4>
+                        <div class="table-responsive">
+                            <table class="table table-hover border">
+                                <tbody>
+                                    <tr><th><span class="fw-bold">In a semester, how often have you had little interest or pleasure in doing things?</span></th><td>{{ score_label(assessment.feeling_down) }}</td></tr>
+                                    <tr><th><span class="fw-bold">In a semester, how often have you been feeling down, depressed or hopeless?</span></th><td>{{ score_label(assessment.lack_of_interest) }}</td></tr>
+                                    <tr><th><span class="fw-bold">In a semester, how often have you had trouble falling or staying asleep, or sleeping too much?</span></th><td>{{ score_label(assessment.sleep_issues) }}</td></tr>
+                                    <tr><th><span class="fw-bold">In a semester, how often have you been feeling tired or having little energy?</span></th><td>{{ score_label(assessment.fatigue) }}</td></tr>
+                                    <tr><th><span class="fw-bold">In a semester, how often have you had poor appetite or overeating?</span></th><td>{{ score_label(assessment.appetite_issues) }}</td></tr>
+                                    <tr><th><span class="fw-bold">In a semester, how often have you been feeling bad about yourself - or that you are a failure or let others down?</span></th><td>{{ score_label(assessment.self_doubt) }}</td></tr>
+                                    <tr><th><span class="fw-bold">In a semester, how often have you been having trouble concentrating on things, such as reading or watching TV?</span></th><td>{{ score_label(assessment.concentration_issues) }}</td></tr>
+                                    <tr><th><span class="fw-bold">In a semester, how often have you moved or spoke too slowly, or more than usual due to restlessness?</span></th><td>{{ score_label(assessment.movement_issues) }}</td></tr>
+                                    <tr><th><span class="fw-bold">In a semester, how often have you had thoughts that you would be better off dead, or of hurting yourself?</span></th><td>{{ score_label(assessment.suicidal_thoughts) }}</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
 
-    <h4>Stress Indicators</h4>
-    <table class="table table-bordered">
-        <tbody>
-            <tr><th><span class="fw-bold">In a semester, how often have you felt upset due to something that happened in your academic affairs?</span></th><td>{{ score_label(assessment.upset) }}</td></tr>
-            <tr><th><span class="fw-bold">In a semester, how often you felt as if you were unable to control important things in your academic affairs?</span></th><td>{{ score_label(assessment.lack_of_control) }}</td></tr>
-            <tr><th><span class="fw-bold">In a semester, how often you felt nervous and stressed because of academic pressure?</span></th><td>{{ score_label(assessment.nervous_stress) }}</td></tr>
-            <tr><th><span class="fw-bold">In a semester, how often you felt as if you could not cope with all the mandatory academic activities?</span></th><td>{{ score_label(assessment.inadequate_coping) }}</td></tr>
-            <tr><th><span class="fw-bold">In a semester, how often you felt confident about your ability to handle your academic / university problems?</span></th><td>{{ score_label(assessment.confident) }}</td></tr>
-            <tr><th><span class="fw-bold">In a semester, how often you felt as if things in your academic life is going on your way?</span></th><td>{{ score_label(assessment.things_going_well) }}</td></tr>
-            <tr><th><span class="fw-bold">In a semester, how often are you able to control irritations in your academic / university affairs?</span></th><td>{{ score_label(assessment.control_irritations) }}</td></tr>
-            <tr><th><span class="fw-bold">In a semester, how often you felt as if your academic performance was on top?</span></th><td>{{ score_label(assessment.top_performance) }}</td></tr>
-            <tr><th><span class="fw-bold">In a semester, how often you got angered due to bad performance or low grades that is beyond your control?</span></th><td>{{ score_label(assessment.angered_by_performance) }}</td></tr>
-            <tr><th><span class="fw-bold">In a semester, how often you felt as if academic difficulties are piling up so high that you could not overcome them?</span></th><td>{{ score_label(assessment.overwhelmed) }}</td></tr>
-        </tbody>
-    </table>
+                    <!-- Predicted Results -->
+                    <div class="mb-4">
+                        <h4 class="text-primary mb-3"><i class="fas fa-chart-line me-2"></i>Predicted Results</h4>
+                        <div class="table-responsive">
+                            <table class="table table-hover border">
+                                <tbody>
+                                    <tr>
+                                        <th class="w-50"><span class="fw-bold">Anxiety Score</span></th>
+                                        <td>{{ assessment.anxiety_label }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th><span class="fw-bold">Stress Score</span></th>
+                                        <td>{{ assessment.stress_label }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th><span class="fw-bold">Depression Score</span></th>
+                                        <td>{{ assessment.depression_label }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
 
-    <h4>Depression Indicators</h4>
-    <table class="table table-bordered">
-        <tbody>
-            <tr><th><span class="fw-bold">In a semester, how often have you had little interest or pleasure in doing things?</span></th><td>{{ score_label(assessment.feeling_down) }}</td></tr>
-            <tr><th><span class="fw-bold">In a semester, how often have you been feeling down, depressed or hopeless?</span></th><td>{{ score_label(assessment.lack_of_interest) }}</td></tr>
-            <tr><th><span class="fw-bold">In a semester, how often have you had trouble falling or staying asleep, or sleeping too much?</span></th><td>{{ score_label(assessment.sleep_issues) }}</td></tr>
-            <tr><th><span class="fw-bold">In a semester, how often have you been feeling tired or having little energy?</span></th><td>{{ score_label(assessment.fatigue) }}</td></tr>
-            <tr><th><span class="fw-bold">In a semester, how often have you had poor appetite or overeating?</span></th><td>{{ score_label(assessment.appetite_issues) }}</td></tr>
-            <tr><th><span class="fw-bold">In a semester, how often have you been feeling bad about yourself - or that you are a failure or let others down?</span></th><td>{{ score_label(assessment.self_doubt) }}</td></tr>
-            <tr><th><span class="fw-bold">In a semester, how often have you been having trouble concentrating on things, such as reading or watching TV?</span></th><td>{{ score_label(assessment.concentration_issues) }}</td></tr>
-            <tr><th><span class="fw-bold">In a semester, how often have you moved or spoke too slowly, or more than usual due to restlessness?</span></th><td>{{ score_label(assessment.movement_issues) }}</td></tr>
-            <tr><th><span class="fw-bold">In a semester, how often have you had thoughts that you would be better off dead, or of hurting yourself?</span></th><td>{{ score_label(assessment.suicidal_thoughts) }}</td></tr>
-        </tbody>
-    </table>
-
-    <h4>Predicted Results</h4>
-    <table class="table table-bordered">
-        <tbody>
-            <tr><th><span class="fw-bold">Anxiety Score</span></th><td>{{ score_label(assessment.anxiety_score) }}</td></tr>
-            <tr><th><span class="fw-bold">Stress Score</span></th><td>{{ score_label(assessment.stress_score) }}</td></tr>
-            <tr><th><span class="fw-bold">Depression Score</span></th><td>{{ score_label(assessment.depression_score) }}</td></tr>
-        </tbody>
-    </table>
-
-    <a href="{{ url_for('view_history') }}" class="btn btn-secondary mt-3">Back to History</a>
+                    <div class="text-center">
+                        <a href="{{ url_for('view_history') }}" class="btn btn-primary btn-lg py-2 rounded-pill">
+                            <i class="fas fa-arrow-left me-2"></i>Back to History
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

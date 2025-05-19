@@ -10,6 +10,12 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
+    department = db.Column(db.Integer, nullable=True)  # Changed to Integer for department codes
+    academic_year = db.Column(db.String(10), nullable=True)
+    gender = db.Column(db.Integer, nullable=True)  # 0 = Female, 1 = Male
+    cgpa = db.Column(db.Float, nullable=True)
+    waiver_scholarship = db.Column(db.Integer, nullable=True)  # 0 = No, 1 = Yes
+    age = db.Column(db.Integer, nullable=True)  # Add this line for age
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
@@ -22,14 +28,6 @@ class Assessment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     timestamp = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
-    
-    # Demographics
-    age = db.Column(db.Integer, nullable=False)
-    gender = db.Column(db.Integer, nullable=False)  # 0: Female, 1: Male
-    department = db.Column(db.String, nullable=False) 
-    academic_year = db.Column(db.String, nullable=False) 
-    cgpa = db.Column(db.Float, nullable=False)
-    waiver_scholarship = db.Column(db.Boolean, nullable=False)  # 0: No, 1: Yes
     
     # Anxiety Indicators (0-4 scale)
     nervous_anxious = db.Column(db.Integer, nullable=False)

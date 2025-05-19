@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show mb-4" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-primary text-white py-4 rounded-top-4">
+                    <div class="text-center">
+                        <i class="fas fa-user-circle fa-2x mb-3"></i>
+                        <h3 class="mb-0">Student Profile</h3>
+                    </div>
+                </div>
+                <div class="card-body p-5">
+                    <form method="POST">
+                        <div class="mb-4">
+                            <h5 class="text-primary">Personal Information</h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Student ID</label>
+                                    <input type="text" class="form-control" value="{{ current_user.username }}" readonly>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" class="form-control" value="{{ current_user.email }}" readonly>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Age</label>
+                                    <input type="number" class="form-control" name="age" min="18" max="30" value="{{ current_user.age }}" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Gender</label>
+                                    <select class="form-select" name="gender" required>
+                                        <option value="">Select Gender</option>
+                                        <option value="0" {% if current_user.gender == 0 %}selected{% endif %}>Female</option>
+                                        <option value="1" {% if current_user.gender == 1 %}selected{% endif %}>Male</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h5 class="text-primary">Academic Information</h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Department</label>
+                                    <select class="form-select" name="department" required>
+                                        <option value="">Select Department</option>
+                                        <option value="0" {% if current_user.department == 0 %}selected{% endif %}>Biological Sciences</option>
+                                        <option value="1" {% if current_user.department == 1 %}selected{% endif %}>Business</option>
+                                        <option value="2" {% if current_user.department == 2 %}selected{% endif %}>CS/IT</option>
+                                        <option value="3" {% if current_user.department == 3 %}selected{% endif %}>Civil Eng</option>
+                                        <option value="4" {% if current_user.department == 4 %}selected{% endif %}>EEE/ECE</option>
+                                        <option value="5" {% if current_user.department == 5 %}selected{% endif %}>Env/Life Sci</option>
+                                        <option value="6" {% if current_user.department == 6 %}selected{% endif %}>Mech Eng</option>
+                                        <option value="7" {% if current_user.department == 7 %}selected{% endif %}>Other</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Academic Year</label>
+                                    <select class="form-select" name="academic_year" required>
+                                        <option value="">Select Year</option>
+                                        <option value="1" {% if current_user.academic_year == '1' %}selected{% endif %}>Year 1</option>
+                                        <option value="2" {% if current_user.academic_year == '2' %}selected{% endif %}>Year 2</option>
+                                        <option value="3" {% if current_user.academic_year == '3' %}selected{% endif %}>Year 3</option>
+                                        <option value="4" {% if current_user.academic_year == '4' %}selected{% endif %}>Year 4</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Current CGPA</label>
+                                    <input type="number" class="form-control" name="cgpa" min="2.50" max="4.00" step="0.01" value="{{ current_user.cgpa }}" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Waiver/Scholarship</label>
+                                    <select class="form-select" name="waiver_scholarship" required>
+                                        <option value="">Select Option</option>
+                                        <option value="0" {% if current_user.waiver_scholarship == 0 %}selected{% endif %}>No</option>
+                                        <option value="1" {% if current_user.waiver_scholarship == 1 %}selected{% endif %}>Yes</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary btn-lg py-2 rounded-pill">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

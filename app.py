@@ -184,8 +184,7 @@ def assessment():
     if request.method == 'POST':
         try:
             # Validate all required fields are present
-            required_fields = ['age', 'gender', 'department', 'academic_year', 
-                             'cgpa', 'waiver_scholarship', 'nervous_anxious', 'worrying', 
+            required_fields = ['nervous_anxious', 'worrying', 
                              'trouble_relaxing', 'easily_annoyed', 'excessive_worry', 
                              'restless', 'fearful', 'upset', 'lack_of_control', 
                              'nervous_stress', 'inadequate_coping', 'confident', 
@@ -206,13 +205,7 @@ def assessment():
             new_assessment = Assessment(
                 user_id=current_user.id,
                 timestamp=current_time,  # Ensure this field exists in your model
-                # Demographics
-                age=int(request.form.get('age')),
-                gender=int(request.form.get('gender')),
-                department=request.form.get('department'),
-                academic_year=request.form.get('academic_year'),
-                cgpa=float(request.form.get('cgpa')),
-                waiver_scholarship=bool(int(request.form.get('waiver_scholarship'))),
+
                 
                 # Anxiety Indicators
                 nervous_anxious=int(request.form.get('nervous_anxious')),
@@ -362,28 +355,54 @@ def view_assessment(assessment_id):
     if assessment.user_id != current_user.id and not getattr(current_user, 'is_admin', False):
         return redirect(url_for('index'))
 
+    # Calculate labels for the assessment
+    assessment.anxiety_label = calculate_anxiety_label(assessment.anxiety_score)
+    assessment.stress_label = calculate_stress_label(assessment.stress_score)
+    assessment.depression_label = calculate_depression_label(assessment.depression_score)
+
     # Helper functions for labels
     def gender_label(code): return "Male" if code == 1 else "Female"
     def bool_label(b): return "Yes" if b else "No"
     def score_label(score): return ["Low", "Mild", "Moderate", "High", "Severe"][score] if score is not None else "N/A"
+    def department_label(code):
+        departments = {
+            0: "Biological Sciences",
+            1: "Business",
+            2: "CS/IT",
+            3: "Civil Eng",
+            4: "EEE/ECE",
+            5: "Env/Life Sci",
+            6: "Mech Eng",
+            7: "Other"
+        }
+        return departments.get(code, "N/A") if code is not None else "N/A"
+    def academic_year_label(year): return f"Year {year}" if year is not None else "N/A"
+    def cgpa_label(cgpa): return f"{cgpa:.2f}" if cgpa is not None else "N/A"
+
+    # Get the user associated with this assessment
+    user = User.query.get(assessment.user_id)
 
     return render_template(
         'view_assessment.html',
         assessment=assessment,
+        user=user,
         gender_label=gender_label,
         bool_label=bool_label,
-        score_label=score_label
+        score_label=score_label,
+        department_label=department_label,
+        academic_year_label=academic_year_label,
+        cgpa_label=cgpa_label
     )
 
 def calculate_anxiety_label(score):
     if score == 0:
-        return "Mild"
+        return "Mild Anxiety"
     elif score == 1:
-        return "Minimal"
+        return "Minimal Anxiety"
     elif score == 2:
-        return "Moderate"
+        return "Moderate Anxiety"
     else:
-        return "Severe"
+        return "Severe Anxiety"
 
 def calculate_stress_label(score):
     if score == 0:
@@ -407,6 +426,37 @@ def predict_with_scaler(input_dict, model, scaler):
     df_input = df_input[scaler.feature_names_in_]
     scaled_input = scaler.transform(df_input)
     return int(model.predict(scaled_input)[0])
+
+@app.route('/student/profile', methods=['GET', 'POST'])
+@login_required
+def profile():
+    if request.method == 'POST':
+        try:
+            # Get form data
+            department = request.form.get('department')
+            academic_year = request.form.get('academic_year')
+            gender = request.form.get('gender')
+            cgpa = request.form.get('cgpa')
+            waiver_scholarship = request.form.get('waiver_scholarship')
+            age = request.form.get('age') 
+
+            # Update user profile
+            current_user.department = int(department) if department else None
+            current_user.academic_year = academic_year
+            current_user.gender = int(gender) if gender else None
+            current_user.cgpa = float(cgpa) if cgpa else None
+            current_user.waiver_scholarship = int(waiver_scholarship) if waiver_scholarship else None
+            current_user.age = int(age) if age else None  
+
+            db.session.commit()
+            flash('Profile updated successfully!', 'success')
+            return redirect(url_for('profile'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error updating profile: {str(e)}', 'danger')
+            return redirect(url_for('profile'))
+
+    return render_template('student/profile.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
