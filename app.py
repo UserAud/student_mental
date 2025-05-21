@@ -1,6 +1,7 @@
-from flask import Flask, render_template, redirect, url_for, flash, request
+from flask import Flask, render_template, redirect, url_for, flash, request, jsonify
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from models import db, User, Assessment
+from sqlalchemy import or_, and_
 import traceback
 from datetime import datetime
 import pytz
@@ -25,25 +26,6 @@ db.init_app(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
-
-# Statistics data for dashboard
-statistics = {
-    'depression_rate': 22,
-    'anxiety_rate': 30,
-    'panic_rate': 15,
-    'high_risk_cases': [
-        {'date': '2529', 'student_id': '20158561', 'depression_risk': 88, 'panic_risk': 12},
-        {'date': '56123', 'student_id': '20158564', 'depression_risk': 83, 'panic_risk': 83},
-        {'date': '5590', 'student_id': '20158562', 'depression_risk': 77, 'panic_risk': 77},
-        {'date': '3242', 'student_id': '20158562', 'depression_risk': 48, 'panic_risk': 21},
-        {'date': '3521', 'student_id': '20158566', 'depression_risk': 56, 'panic_risk': 41}
-    ],
-    'year_breakdown': {
-        'Year 1': 75,
-        'Year 2': 65,
-        'Year 3': 60
-    }
-}
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -118,17 +100,78 @@ def student_dashboard():
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
     
-    return render_template('student/home.html', stats=statistics)
+    stats = calculate_dashboard_stats()  # <- Dynamic calculation
+    return render_template('student/home.html', stats=stats)
+
+
+def calculate_dashboard_stats():
+    # Get all assessments
+    assessments = Assessment.query.all()
+    total = len(assessments)
+    if total == 0:
+        return {
+            'depression_rate': 0,
+            'anxiety_rate': 0,
+            'stress_rate': 0,
+            'high_risk_cases': [],
+            'year_breakdown': {}
+        }
+
+    # Calculate high risk rates (Moderate or Severe)
+    depression_high = [a for a in assessments if a.depression_score is not None and a.depression_score >= 2]
+    anxiety_high = [a for a in assessments if a.anxiety_score is not None and a.anxiety_score >= 2]
+    stress_high = [a for a in assessments if a.stress_score is not None and a.stress_score >= 1]  # Adjust threshold if needed
+
+    depression_rate = int(len(depression_high) / total * 100)
+    anxiety_rate = int(len(anxiety_high) / total * 100)
+    stress_rate = int(len(stress_high) / total * 100)
+
+    # High risk cases
+    high_risk_cases = []
+    risk_cases = [a for a in assessments if
+                  (a.anxiety_score is not None and a.anxiety_score >= 2) or
+                  (a.stress_score is not None and a.stress_score >= 1) or
+                  (a.depression_score is not None and a.depression_score >= 2)]
+
+    for a in risk_cases:
+        high_risk_cases.append({
+            'id': a.id,
+            'date': a.timestamp.strftime('%Y-%m-%d'),
+            'student_id': a.user.username if a.user else str(a.user_id),
+            'email': a.user.email if a.user else '',   # <-- Add this line!
+            'anxiety_risk': int((a.anxiety_score / 3) * 100) if a.anxiety_score is not None else 0,
+            'stress_risk': int((a.stress_score / 2) * 100) if a.stress_score is not None else 0,
+            'depression_risk': int((a.depression_score / 3) * 100) if a.depression_score is not None else 0,
+            'status': getattr(a, 'status', 'Pending')
+        })
+
+    # Year breakdown (optional, based on your model)
+    year_breakdown = {}
+    years = ['1', '2', '3', '4']
+    for year in years:
+        year_cases = [a for a in assessments if hasattr(a, 'academic_year') and getattr(a, 'academic_year', '').endswith(year)]
+        year_breakdown[f'Year {year}'] = len(year_cases)
+
+    return {
+        'depression_rate': depression_rate,
+        'anxiety_rate': anxiety_rate,
+        'stress_rate': stress_rate,
+        'high_risk_cases': high_risk_cases,
+        'year_breakdown': year_breakdown
+    }
+
+
 
 @app.route('/admin/dashboard')
 @login_required
 def admin_dashboard():
-    # Ensure only admin can access this route
     if not current_user.is_admin:
         flash('You do not have permission to view this page.', 'danger')
         return redirect(url_for('index'))
 
-    return render_template('admin/dashboard.html', stats=statistics)
+    stats = calculate_dashboard_stats()
+    return render_template('admin/dashboard.html', stats=stats)
+
 
 
 def generate_recommendations(anxiety_score, stress_score, depression_score):
@@ -460,5 +503,37 @@ def profile():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+@app.route('/api/cases/<int:assessment_id>/review', methods=['POST'])
+@login_required
+def mark_case_reviewed(assessment_id):
+    # Admin-only
+    if not current_user.is_admin:
+        return jsonify({'success': False, 'message': 'Permission denied.'}), 403
+
+    assessment = Assessment.query.get(assessment_id)
+    if not assessment:
+        return jsonify({'success': False, 'message': 'Assessment not found.'}), 404
+
+    assessment.status = "Consulted"
+    db.session.commit()
+    return jsonify({'success': True})
+
+@app.route('/admin/all-assessments')
+@login_required
+def all_assessments():
+    if not current_user.is_admin:
+        return redirect(url_for('index'))
+    assessments = Assessment.query.order_by(Assessment.timestamp.desc()).all()
+    return render_template(
+        'admin/all_assessments.html',
+        assessments=assessments,
+        calculate_anxiety_label=calculate_anxiety_label,
+        calculate_stress_label=calculate_stress_label,
+        calculate_depression_label=calculate_depression_label
+    )
+
+for rule in app.url_map.iter_rules():
+    print(f"Endpoint: {rule.endpoint}, URL: {rule}")
 
 

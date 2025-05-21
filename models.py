@@ -66,5 +66,8 @@ class Assessment(db.Model):
     stress_score = db.Column(db.Integer, nullable=True)
     depression_score = db.Column(db.Integer, nullable=True)
 
+    # Status of whether the student has been consulted
+    status = db.Column(db.String(20), default="Pending")  # "Pending" or "Consulted"
+
     # Relationship with User
     user = db.relationship('User', backref=db.backref('assessments', lazy=True))
