@@ -131,7 +131,7 @@
                                             </a>
                                             <!-- Tick: AJAX call to update status -->
                                             {% if case.status != 'Consulted' %}
-                                            <button class="btn btn-outline-success" onclick="markAsReviewed({{ case.id }})" title="Mark Consulted">
+                                            <button class="btn btn-outline-success" onclick="markAsReviewed('{{ case.id }}')" title="Mark Consulted">
                                                 <i class="fas fa-check"></i>
                                             </button>
                                             {% endif %}
