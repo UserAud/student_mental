@@ -206,9 +206,9 @@ def generate_recommendations(anxiety_score, stress_score, depression_score):
         stress_label = "Moderate Stress"
 
     # Label encoding for Depression
-    if depression_score in [0, 1, 4]:
+    if depression_score == 0:
         depression_label = "No or Mild Depression"
-    elif depression_score in [2, 3]:
+    elif depression_score == 1:
         depression_label = "Moderate Depression"
     else:
         depression_label = "Severe Depression"
