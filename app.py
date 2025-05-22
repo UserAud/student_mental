@@ -372,11 +372,6 @@ def assessment():
 
     return render_template('student/assessment.html')
 
-@app.route('/student/chatbot')
-@login_required
-def chatbot():
-    return render_template('student/chatbot.html')
-
 @app.route('/logout')
 @login_required
 def logout():
@@ -513,9 +508,6 @@ def profile():
 
     return render_template('student/profile.html')
 
-if __name__ == '__main__':
-    app.run(debug=True)
-
 @app.route('/api/cases/<int:assessment_id>/review', methods=['POST'])
 @login_required
 def mark_case_reviewed(assessment_id):
@@ -531,11 +523,6 @@ def mark_case_reviewed(assessment_id):
     db.session.commit()
     return jsonify({'success': True})
 
-@app.route('/test-endpoints')
-def test_endpoints():
-    return str([rule.endpoint for rule in app.url_map.iter_rules()])
-
-for rule in app.url_map.iter_rules():
-    print(f"Endpoint: {rule.endpoint}, URL: {rule}")
-
+if __name__ == '__main__':
+    app.run(debug=True)
 

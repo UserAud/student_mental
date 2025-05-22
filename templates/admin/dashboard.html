@@ -3,63 +3,8 @@
 {% block content %}
 <div class="container-fluid py-4">
     <div class="row g-4">
-        <!-- Filters Section (Sidebar) -->
-        <div class="col-lg-3">
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-light">
-                    <h5 class="mb-0"><i class="fas fa-filter me-2"></i>FILTERS</h5>
-                </div>
-                <div class="card-body">
-                    <div class="mb-3">
-                        <h6>Gender</h6>
-                        <div class="btn-group w-100" role="group" aria-label="Gender Filter">
-                            <input type="radio" class="btn-check" name="gender" id="gender_all" autocomplete="off" checked onchange="applyFilters()">
-                            <label class="btn btn-outline-primary" for="gender_all">All</label>
-
-                            <input type="radio" class="btn-check" name="gender" id="gender_female" autocomplete="off" onchange="applyFilters()">
-                            <label class="btn btn-outline-primary" for="gender_female">Female</label>
-
-                            <input type="radio" class="btn-check" name="gender" id="gender_male" autocomplete="off" onchange="applyFilters()">
-                            <label class="btn btn-outline-primary" for="gender_male">Male</label>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="course" class="form-label fw-bold">Course</label>
-                        <select id="course" class="form-select" onchange="applyFilters()">
-                            <option selected>All Courses</option>
-                            <option>Engineering</option>
-                            <!-- Add other courses -->
-                        </select>
-                    </div>
-                    <div>
-                        <h6>Year of Study</h6>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="year_all" checked onchange="applyFilters()">
-                            <label class="form-check-label" for="year_all">All</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="year1" checked onchange="applyFilters()">
-                            <label class="form-check-label" for="year1">Year 1</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="year2" checked onchange="applyFilters()">
-                            <label class="form-check-label" for="year2">Year 2</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="year3" checked onchange="applyFilters()">
-                            <label class="form-check-label" for="year3">Year 3</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="year4" checked onchange="applyFilters()">
-                            <label class="form-check-label" for="year4">Year 4</label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Main Content Section -->
-        <div class="col-lg-6">
+        <div class="col-lg-6 mx-auto">
             <!-- Stat Cards -->
             <div class="row g-4 mb-4">
                 <div class="col-md-4">
@@ -131,7 +76,7 @@
                                             </a>
                                             <!-- Tick: AJAX call to update status -->
                                             {% if case.status != 'Consulted' %}
-                                            <button class="btn btn-outline-success" onclick="markAsReviewed('{{ case.id }}')" title="Mark Consulted">
+                                            <button class="btn btn-outline-success mark-reviewed-btn" data-id="{{ case.id }}" title="Mark Consulted">
                                                 <i class="fas fa-check"></i>
                                             </button>
                                             {% endif %}
@@ -155,27 +100,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Charts Section -->
-        <div class="col-lg-3">
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-light">
-                    <h6 class="mb-0">Correlation Heatmap</h6>
-                </div>
-                <div class="card-body">
-                    <canvas id="correlationHeatmap" style="min-height: 250px;"></canvas>
-                </div>
-            </div>
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-light">
-                    <h6 class="mb-0">Breakdown by Year</h6>
-                </div>
-                <div class="card-body">
-                    <canvas id="yearBreakdown" style="min-height: 250px;"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Student Details Modal -->
     <div class="modal fade" id="studentDetailsModal" tabindex="-1" aria-labelledby="studentDetailsModalLabel" aria-hidden="true">
@@ -226,40 +150,19 @@
 {% endblock %}
 
 {% block scripts %}
-{{ super() }} {# Include scripts from base.html if any #}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-matrix@1.1.1/dist/chartjs-chart-matrix.min.js"></script> {# Added for heatmap #}
 
 <script>
-function viewDetails(studentId) {
-    // Example: Fetch and display student details
-    const detailsContainer = document.getElementById('studentDetails');
-    detailsContainer.innerHTML = `<p>Loading details for student ${studentId}...</p>`; // Placeholder
-    // Replace with your actual fetch logic to get and display details
-    // Example: detailsContainer.innerHTML = 'Fetched details content...';
-    var studentDetailsModal = new bootstrap.Modal(document.getElementById('studentDetailsModal'));
-    studentDetailsModal.show();
-}
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".mark-reviewed-btn").forEach(function (button) {
+        button.addEventListener("click", function () {
+            const assessmentId = this.getAttribute("data-id");
 
-function contactStudent(studentId) {
-    // You might want to pass the studentId to the modal if needed
-    console.log(`Initiating contact for student ${studentId}`);
-    var contactModal = new bootstrap.Modal(document.getElementById('contactModal'));
-    // Optionally pre-fill form fields based on studentId
-    contactModal.show();
-}
-
-function applyFilters() {
-    const selectedGender = document.querySelector('input[name="gender"]:checked').id;
-    const selectedCourse = document.getElementById('course').value;
-    const selectedYears = Array.from(document.querySelectorAll('input[id^="year"]:checked')).map(cb => cb.id);
-
-    console.log("Filters applied:", { selectedGender, selectedCourse, selectedYears });
-
-    // TODO: Use fetch or update logic to filter dashboard content via API
-    // Example (optional):
-    // fetch(`/dashboard?gender=${selectedGender}&course=${selectedCourse}&years=${selectedYears.join(',')}`)
-}
+            markAsReviewed(assessmentId);
+        });
+    });
+});
 
 function markAsReviewed(assessmentId) {
     fetch(`/api/cases/${assessmentId}/review`, {
@@ -269,7 +172,7 @@ function markAsReviewed(assessmentId) {
     .then(response => response.json())
     .then(data => {
         if(data.success) {
-            location.reload();
+            window.location.reload();
         } else {
             alert('Failed to update status: ' + data.message);
         }
@@ -279,140 +182,5 @@ function markAsReviewed(assessmentId) {
         console.error(err);
     });
 }
-
-// Handle contact form submission
-document.getElementById('contactForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const subject = document.getElementById('contactSubject').value;
-    const message = document.getElementById('contactMessage').value;
-    console.log('Sending message:', { subject, message });
-    // Add your actual message sending logic here (e.g., fetch POST request)
-    alert('Message sending functionality not implemented yet.'); // Placeholder
-    var contactModal = bootstrap.Modal.getInstance(document.getElementById('contactModal'));
-    contactModal.hide();
-    // Optionally clear the form
-    // e.target.reset();
-});
-
-// --- Chart.js Initialization ---
-document.addEventListener('DOMContentLoaded', () => {
-    try {
-        // Correlation Heatmap
-        const correlationCtx = document.getElementById('correlationHeatmap')?.getContext('2d');
-        if (correlationCtx) {
-            const correlationData = {
-                labels: ['Depression', 'Anxiety', 'Stress', 'CGPA'],
-                datasets: [{
-                    label: 'Correlation Matrix',
-                    data: [
-                        {x: 'Depression', y: 'Depression', v: 1.0}, {x: 'Anxiety', y: 'Depression', v: 0.8}, {x: 'Stress', y: 'Depression', v: 0.6}, {x: 'CGPA', y: 'Depression', v: -0.4},
-                        {x: 'Depression', y: 'Anxiety', v: 0.8}, {x: 'Anxiety', y: 'Anxiety', v: 1.0}, {x: 'Stress', y: 'Anxiety', v: 0.7}, {x: 'CGPA', y: 'Anxiety', v: -0.3},
-                        {x: 'Depression', y: 'Stress', v: 0.6}, {x: 'Anxiety', y: 'Stress', v: 0.7}, {x: 'Stress', y: 'Stress', v: 1.0}, {x: 'CGPA', y: 'Stress', v: -0.5},
-                        {x: 'Depression', y: 'CGPA', v: -0.4}, {x: 'Anxiety', y: 'CGPA', v: -0.3}, {x: 'Stress', y: 'CGPA', v: -0.5}, {x: 'CGPA', y: 'CGPA', v: 1.0}
-                    ],
-                     backgroundColor: function(ctx) {
-                        const value = ctx.dataset.data[ctx.dataIndex].v;
-                        const alpha = Math.min(Math.abs(value), 1); // Ensure alpha is between 0 and 1
-                        return value > 0
-                            ? `rgba(255, 99, 132, ${alpha})` // Red for positive
-                            : `rgba(54, 162, 235, ${alpha})`; // Blue for negative
-                    },
-                    borderColor: 'rgba(200, 200, 200, 0.5)',
-                    borderWidth: 1,
-                    width: ({chart}) => (chart.chartArea || {}).width / correlationData.labels.length - 1,
-                    height: ({chart}) => (chart.chartArea || {}).height / correlationData.labels.length - 1
-                }]
-            };
-            new Chart(correlationCtx, {
-                type: 'matrix',
-                data: correlationData,
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false, // Allow chart to fill container height
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                title: () => '', // No title
-                                label: (context) => {
-                                    const v = context.dataset.data[context.dataIndex];
-                                    return [`${v.x} vs ${v.y}`, `Correlation: ${v.v.toFixed(2)}`];
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            type: 'category',
-                            labels: correlationData.labels,
-                            ticks: { display: true }, // Show axis labels
-                            grid: { display: false }
-                        },
-                        y: {
-                            type: 'category',
-                            labels: correlationData.labels,
-                            offset: true,
-                            ticks: { display: true }, // Show axis labels
-                            grid: { display: false }
-                        }
-                    }
-                }
-            });
-        } else {
-            console.warn("Canvas element for correlation heatmap not found.");
-        }
-
-        // Year Breakdown Chart
-        const yearBreakdownCtx = document.getElementById('yearBreakdown')?.getContext('2d');
-         if (yearBreakdownCtx) {
-            const yearBreakdownData = {
-                labels: ['Year 1', 'Year 2', 'Year 3', 'Year 4'],
-                datasets: [{
-                    label: 'Risk Level',
-                    data: [75, 65, 60, 45], // Example data
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.6)',
-                        'rgba(54, 162, 235, 0.6)',
-                        'rgba(255, 206, 86, 0.6)',
-                        'rgba(75, 192, 192, 0.6)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            };
-            new Chart(yearBreakdownCtx, {
-                type: 'bar',
-                data: yearBreakdownData,
-                options: {
-                    indexAxis: 'y', // Make it a horizontal bar chart if preferred
-                    responsive: true,
-                    maintainAspectRatio: false, // Allow chart to fill container height
-                    scales: {
-                         x: { // Changed from y
-                            beginAtZero: true,
-                            max: 100,
-                            title: {
-                                display: true,
-                                text: 'Risk Level (%)'
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: { display: false }
-                    }
-                }
-            });
-        } else {
-             console.warn("Canvas element for year breakdown chart not found.");
-        }
-    } catch (error) {
-        console.error("Error initializing charts:", error);
-    }
-});
 </script>
 {% endblock %}
