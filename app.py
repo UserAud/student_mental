@@ -524,5 +524,5 @@ def mark_case_reviewed(assessment_id):
     return jsonify({'success': True})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
 
