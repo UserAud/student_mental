@@ -16,7 +16,7 @@ A web-based application designed to assess and monitor student mental health, pr
 ### For Administrators
 - **Dashboard Analytics**: Monitor mental health trends across the student population
 - **Risk Management**: Track high-risk cases and intervention status
-- **Statistical Overview**: View depression, anxiety, and panic rates
+- **Statistical Overview**: View depression, anxiety, and stress rates
 - **Year-wise Analysis**: Break down mental health trends by academic year
 
 ## Technical Stack

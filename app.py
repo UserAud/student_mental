@@ -160,7 +160,19 @@ def calculate_dashboard_stats():
         'year_breakdown': year_breakdown
     }
 
-
+@app.route('/admin/all-assessments')
+@login_required
+def all_assessments():
+    if not current_user.is_admin:
+        return redirect(url_for('index'))
+    assessments = Assessment.query.order_by(Assessment.timestamp.desc()).all()
+    return render_template(
+        'admin/all_assessments.html',
+        assessments=assessments,
+        calculate_anxiety_label=calculate_anxiety_label,
+        calculate_stress_label=calculate_stress_label,
+        calculate_depression_label=calculate_depression_label
+    )
 
 @app.route('/admin/dashboard')
 @login_required
@@ -519,19 +531,9 @@ def mark_case_reviewed(assessment_id):
     db.session.commit()
     return jsonify({'success': True})
 
-@app.route('/admin/all-assessments')
-@login_required
-def all_assessments():
-    if not current_user.is_admin:
-        return redirect(url_for('index'))
-    assessments = Assessment.query.order_by(Assessment.timestamp.desc()).all()
-    return render_template(
-        'admin/all_assessments.html',
-        assessments=assessments,
-        calculate_anxiety_label=calculate_anxiety_label,
-        calculate_stress_label=calculate_stress_label,
-        calculate_depression_label=calculate_depression_label
-    )
+@app.route('/test-endpoints')
+def test_endpoints():
+    return str([rule.endpoint for rule in app.url_map.iter_rules()])
 
 for rule in app.url_map.iter_rules():
     print(f"Endpoint: {rule.endpoint}, URL: {rule}")

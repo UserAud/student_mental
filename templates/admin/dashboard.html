@@ -63,14 +63,6 @@
             <!-- Stat Cards -->
             <div class="row g-4 mb-4">
                 <div class="col-md-4">
-                    <div class="card text-center shadow-sm border-start border-danger border-4 h-100">
-                        <div class="card-body">
-                            <h5 class="card-title text-danger">Depression</h5>
-                            <p class="display-4 fw-bold text-danger mb-0">{{ stats.depression_rate }}%</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
                     <div class="card text-center shadow-sm border-start border-warning border-4 h-100">
                         <div class="card-body">
                             <h5 class="card-title text-warning">Anxiety</h5>
@@ -81,8 +73,16 @@
                 <div class="col-md-4">
                     <div class="card text-center shadow-sm border-start border-info border-4 h-100">
                         <div class="card-body">
-                            <h5 class="card-title text-info">Panic</h5>
-                            <p class="display-4 fw-bold text-info mb-0">{{ stats.panic_rate }}%</p>
+                            <h5 class="card-title text-info">Stress</h5>
+                            <p class="display-4 fw-bold text-info mb-0">{{ stats.stress_rate }}%</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-center shadow-sm border-start border-danger border-4 h-100">
+                        <div class="card-body">
+                            <h5 class="card-title text-danger">Depression</h5>
+                            <p class="display-4 fw-bold text-danger mb-0">{{ stats.depression_rate }}%</p>
                         </div>
                     </div>
                 </div>
@@ -135,10 +135,11 @@
                                                 <i class="fas fa-check"></i>
                                             </button>
                                             {% endif %}
-                                            <a class="btn btn-outline-info" 
-                                                href="mailto:{{ case.email }}?subject=Consultation%20Request&body=Dear%20Student%2C%0A%0AWe%20would%20like%20to%20discuss%20your%20recent%20assessment.%20Please%20reply%20to%20schedule%20a%20consultation.%0A%0AThank%20you." 
-                                                title="Contact Student">
-                                                <i class="fas fa-envelope"></i>
+                                                <a class="btn btn-outline-info"
+                                                    href="mailto:{{ case.email }}?subject=Consultation%20Request&body=Dear%20Student%2C%0A%0AWe%20would%20like%20to%20discuss%20your%20recent%20assessment.%20Please%20reply%20to%20schedule%20a%20consultation.%0A%0AThank%20you."
+                                                    title="Contact Student">
+                                                        <i class="fas fa-envelope"></i>
+                                                </a>
                                         </div>
                                     </td>
                                 </tr>
@@ -240,38 +241,6 @@ function viewDetails(studentId) {
     studentDetailsModal.show();
 }
 
-function markAsReviewed(studentId) {
-    console.log(`Marking case ${studentId} as reviewed...`);
-    // Send request to mark case as reviewed
-    fetch(`/api/cases/${studentId}/review`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            // Add any necessary headers like CSRF tokens if applicable
-        },
-        // body: JSON.stringify({ reviewed: true }) // Optional body if needed
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log('Review status updated:', data);
-        if (data.success) {
-            // Update UI to show reviewed status - simple reload for now
-            location.reload();
-        } else {
-             alert('Failed to mark as reviewed.');
-        }
-    })
-    .catch(error => {
-        console.error('Error marking as reviewed:', error);
-        alert('An error occurred while marking as reviewed.');
-    });
-}
-
 function contactStudent(studentId) {
     // You might want to pass the studentId to the modal if needed
     console.log(`Initiating contact for student ${studentId}`);
@@ -332,14 +301,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const correlationCtx = document.getElementById('correlationHeatmap')?.getContext('2d');
         if (correlationCtx) {
             const correlationData = {
-                labels: ['Depression', 'Anxiety', 'Panic', 'CGPA'],
+                labels: ['Depression', 'Anxiety', 'Stress', 'CGPA'],
                 datasets: [{
                     label: 'Correlation Matrix',
                     data: [
-                        {x: 'Depression', y: 'Depression', v: 1.0}, {x: 'Anxiety', y: 'Depression', v: 0.8}, {x: 'Panic', y: 'Depression', v: 0.6}, {x: 'CGPA', y: 'Depression', v: -0.4},
-                        {x: 'Depression', y: 'Anxiety', v: 0.8}, {x: 'Anxiety', y: 'Anxiety', v: 1.0}, {x: 'Panic', y: 'Anxiety', v: 0.7}, {x: 'CGPA', y: 'Anxiety', v: -0.3},
-                        {x: 'Depression', y: 'Panic', v: 0.6}, {x: 'Anxiety', y: 'Panic', v: 0.7}, {x: 'Panic', y: 'Panic', v: 1.0}, {x: 'CGPA', y: 'Panic', v: -0.5},
-                        {x: 'Depression', y: 'CGPA', v: -0.4}, {x: 'Anxiety', y: 'CGPA', v: -0.3}, {x: 'Panic', y: 'CGPA', v: -0.5}, {x: 'CGPA', y: 'CGPA', v: 1.0}
+                        {x: 'Depression', y: 'Depression', v: 1.0}, {x: 'Anxiety', y: 'Depression', v: 0.8}, {x: 'Stress', y: 'Depression', v: 0.6}, {x: 'CGPA', y: 'Depression', v: -0.4},
+                        {x: 'Depression', y: 'Anxiety', v: 0.8}, {x: 'Anxiety', y: 'Anxiety', v: 1.0}, {x: 'Stress', y: 'Anxiety', v: 0.7}, {x: 'CGPA', y: 'Anxiety', v: -0.3},
+                        {x: 'Depression', y: 'Stress', v: 0.6}, {x: 'Anxiety', y: 'Stress', v: 0.7}, {x: 'Stress', y: 'Stress', v: 1.0}, {x: 'CGPA', y: 'Stress', v: -0.5},
+                        {x: 'Depression', y: 'CGPA', v: -0.4}, {x: 'Anxiety', y: 'CGPA', v: -0.3}, {x: 'Stress', y: 'CGPA', v: -0.5}, {x: 'CGPA', y: 'CGPA', v: 1.0}
                     ],
                      backgroundColor: function(ctx) {
                         const value = ctx.dataset.data[ctx.dataIndex].v;
