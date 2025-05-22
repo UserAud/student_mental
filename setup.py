@@ -1,8 +1,13 @@
 from werkzeug.security import generate_password_hash
-from app import app, db, User 
+from app import app, db, User
+import os
+from dotenv import load_dotenv
 
-password = input("Enter password for admin: ")
-email = input("Enter email for admin: ")
+load_dotenv()
+
+# Load admin credentials from environment variables
+password = os.getenv("ADMIN_PASSWORD")
+email = os.getenv("ADMIN_EMAIL")
 
 with app.app_context():
     db.create_all()

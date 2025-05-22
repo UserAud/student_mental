@@ -2,3 +2,4 @@ venv
 instance/database.db
 __pycache__/
 *.pyc
+.env
