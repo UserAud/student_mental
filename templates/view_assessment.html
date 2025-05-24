@@ -95,8 +95,8 @@
                     </div>
 
                     <div class="text-center">
-                        <a href="{{ url_for('view_history') }}" class="btn btn-primary btn-lg py-2 rounded-pill">
-                            <i class="fas fa-arrow-left me-2"></i>Back to History
+                        <a href="{{ url_for('all_assessments') if current_user.is_admin else url_for('view_history') }}" class="btn btn-primary btn-lg py-2 rounded-pill">
+                            <i class="fas fa-arrow-left me-2"></i>Back
                         </a>
                     </div>
                 </div>
