@@ -137,7 +137,7 @@ def calculate_dashboard_stats():
     risk_cases = [a for a in assessments if
                   (a.anxiety_score is not None and a.anxiety_score >= 2) or
                   (a.stress_score is not None and a.stress_score >= 1) or
-                  (a.depression_score is not None and a.depression_score >= 2)]
+                  (a.depression_score is not None and a.depression_score >= 3)]
 
     for a in risk_cases:
         high_risk_cases.append({
