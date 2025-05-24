@@ -66,7 +66,7 @@ python app.py
   - admin/ : Admin dashboard templates
   - student/ : Student interface templates
 - static/ : CSS and JavaScript files
-- data / : The datasets used throughout the data analysis and modeling pipeline.
+- data/ : The datasets used throughout the data analysis and modeling pipeline.
 - notebook/ : Jupyter notebook workspace for developing machine learning models.
 
 ## Assessment Components
