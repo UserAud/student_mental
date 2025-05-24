@@ -60,9 +60,9 @@
                                 <tr>
                                     <td>{{ case.date }}</td>
                                     <td>{{ case.student_id }}</td>
-                                    <td><span class="fw-bold text-warning">{{ case.anxiety_risk }}%</span></td>
-                                    <td><span class="fw-bold text-info">{{ case.stress_risk }}%</span></td>
-                                    <td><span class="fw-bold text-danger">{{ case.depression_risk }}%</span></td>
+                                    <td><span class="fw-bold text-warning">{{ case.anxiety_risk }}</span></td>
+                                    <td><span class="fw-bold text-info">{{ case.stress_risk }}</span></td>
+                                    <td><span class="fw-bold text-danger">{{ case.depression_risk }}</span></td>
                                     <td>
                                         <span class="badge {% if case.status == 'Consulted' %}bg-success{% else %}bg-warning text-dark{% endif %}">
                                             {{ case.status }}

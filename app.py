@@ -27,6 +27,12 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
+labels_order = {
+    "Depression Label": ["No Depression", "Minimal Depression", "Mild Depression", "Moderate Depression", "Moderately Severe Depression", "Severe Depression"],
+    "Anxiety Label": ["Minimal Anxiety", "Mild Anxiety", "Moderate Anxiety", "Severe Anxiety"],
+    "Stress Label": ["Low Stress", "Moderate Stress", "High Perceived Stress"]
+}
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -118,7 +124,7 @@ def calculate_dashboard_stats():
         }
 
     # Calculate high risk rates (Moderate or Severe)
-    depression_high = [a for a in assessments if a.depression_score is not None and a.depression_score >= 2]
+    depression_high = [a for a in assessments if a.depression_score is not None and a.depression_score >= 3]
     anxiety_high = [a for a in assessments if a.anxiety_score is not None and a.anxiety_score >= 2]
     stress_high = [a for a in assessments if a.stress_score is not None and a.stress_score >= 1]  # Adjust threshold if needed
 
@@ -139,9 +145,9 @@ def calculate_dashboard_stats():
             'date': a.timestamp.strftime('%Y-%m-%d'),
             'student_id': a.user.username if a.user else str(a.user_id),
             'email': a.user.email if a.user else '',   # <-- Add this line!
-            'anxiety_risk': int((a.anxiety_score / 3) * 100) if a.anxiety_score is not None else 0,
-            'stress_risk': int((a.stress_score / 2) * 100) if a.stress_score is not None else 0,
-            'depression_risk': int((a.depression_score / 3) * 100) if a.depression_score is not None else 0,
+            'anxiety_risk': labels_order["Anxiety Label"][a.anxiety_score].replace(" Anxiety", ""),
+            'stress_risk': labels_order["Stress Label"][a.stress_score].replace(" Stress", ""),
+            'depression_risk': labels_order["Depression Label"][a.depression_score].replace(" Depression", ""),
             'status': getattr(a, 'status', 'Pending')
         })
 
@@ -187,39 +193,13 @@ def admin_dashboard():
 
 
 def generate_recommendations(anxiety_score, stress_score, depression_score):
-    # Label encoding for Anxiety
-    if anxiety_score == 0:
-        anxiety_label = "Mild Anxiety"
-    elif anxiety_score == 1:
-        anxiety_label = "Minimal Anxiety"
-    elif anxiety_score == 2:
-        anxiety_label = "Moderate Anxiety"
-    else:
-        anxiety_label = "Severe Anxiety"
-
-    # Label encoding for Stress
-    if stress_score == 0:
-        stress_label = "High Perceived Stress"
-    elif stress_score == 1:
-        stress_label = "Low Stress"
-    else:
-        stress_label = "Moderate Stress"
-
-    # Label encoding for Depression
-    if depression_score == 0:
-        depression_label = "No or Mild Depression"
-    elif depression_score == 1:
-        depression_label = "Moderate Depression"
-    else:
-        depression_label = "Severe Depression"
-
     recommendations = []
 
-    if anxiety_score > 3:
+    if anxiety_score >= 2:
         recommendations.append("Consider practicing mindfulness or meditation to manage anxiety.")
-    if stress_score > 3:
+    if stress_score >= 2:
         recommendations.append("Engage in regular physical activity to help reduce stress.")
-    if depression_score > 3:
+    if depression_score >= 4:
         recommendations.append("Seek support from a mental health professional for depression.")
 
     if not recommendations:
@@ -227,9 +207,9 @@ def generate_recommendations(anxiety_score, stress_score, depression_score):
 
     return {
         "recommendations": " ".join(recommendations),
-        "anxiety_label": anxiety_label,
-        "stress_label": stress_label,
-        "depression_label": depression_label
+        "anxiety_label": labels_order["Anxiety Label"][anxiety_score],
+        "stress_label": labels_order["Stress Label"][stress_score],
+        "depression_label": labels_order["Depression Label"][depression_score]
     }
 
 
@@ -445,30 +425,13 @@ def view_assessment(assessment_id):
     )
 
 def calculate_anxiety_label(score):
-    if score == 0:
-        return "Mild Anxiety"
-    elif score == 1:
-        return "Minimal Anxiety"
-    elif score == 2:
-        return "Moderate Anxiety"
-    else:
-        return "Severe Anxiety"
+    return labels_order["Anxiety Label"][score]
 
 def calculate_stress_label(score):
-    if score == 0:
-        return "High Perceived Stress"
-    elif score == 1:
-        return "Low Stress"
-    else:
-        return "Moderate Stress"
+    return labels_order["Stress Label"][score]
 
 def calculate_depression_label(score):
-    if score == 0:
-        return "No or Mild Depression"
-    elif score == 1:
-        return "Moderate Depression"
-    else:
-        return "Severe Depression"
+    return labels_order["Depression Label"][score]
     
 def predict_with_scaler(input_dict, model, scaler):
     import pandas as pd
