@@ -34,7 +34,7 @@ A web-based application designed to assess and monitor student mental health, pr
 
 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/student_mental.git
+git clone https://github.com/UserAud/student_mental.git
 cd student_mental
 ```
 2. Create and activate virtual environment:
