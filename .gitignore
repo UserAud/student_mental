@@ -3,4 +3,4 @@ instance/database.db
 __pycache__/
 *.pyc
 .env
-.DS_Store
+.DS_Store/
